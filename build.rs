@@ -30,6 +30,7 @@ const ACTORS: &[(&Package, &ID)] = &[
     ("evm", "evm"),
     ("eam", "eam"),
     ("ethaccount", "ethaccount"),
+    ("adm", "adm"),
 ];
 
 const NETWORK_ENV: &str = "BUILD_FIL_NETWORK";

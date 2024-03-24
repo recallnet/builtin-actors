@@ -70,6 +70,7 @@ lazy_static::lazy_static! {
     pub static ref EVM_ACTOR_CODE_ID: Cid = make_identity_cid(b"fil/test/evm");
     pub static ref EAM_ACTOR_CODE_ID: Cid = make_identity_cid(b"fil/test/eam");
     pub static ref ETHACCOUNT_ACTOR_CODE_ID: Cid = make_identity_cid(b"fil/test/ethaccount");
+    pub static ref ADM_ACTOR_CODE_ID: Cid = make_identity_cid(b"fil/test/adm");
 
     pub static ref ACTOR_TYPES: BTreeMap<Cid, Type> = {
         let mut map = BTreeMap::new();
@@ -89,6 +90,7 @@ lazy_static::lazy_static! {
         map.insert(*EVM_ACTOR_CODE_ID, Type::EVM);
         map.insert(*EAM_ACTOR_CODE_ID, Type::EAM);
         map.insert(*ETHACCOUNT_ACTOR_CODE_ID, Type::EthAccount);
+        map.insert(*ADM_ACTOR_CODE_ID, Type::ADM);
         map
     };
     pub static ref ACTOR_CODES: BTreeMap<Type, Cid> = [
@@ -108,6 +110,7 @@ lazy_static::lazy_static! {
         (Type::EVM, *EVM_ACTOR_CODE_ID),
         (Type::EAM, *EAM_ACTOR_CODE_ID),
         (Type::EthAccount, *ETHACCOUNT_ACTOR_CODE_ID),
+        (Type::ADM, *ADM_ACTOR_CODE_ID),
     ]
     .into_iter()
     .collect();
