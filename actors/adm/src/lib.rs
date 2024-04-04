@@ -5,26 +5,14 @@ use std::iter;
 
 use cid::Cid;
 use fvm_ipld_encoding::{ipld_block::IpldBlock, tuple::*, RawBytes};
-use fvm_shared::{
-    address::{Address, Payload},
-    crypto::hash::SupportedHashes,
-    error::ExitCode,
-    sys::SendFlags,
-    ActorID, METHOD_CONSTRUCTOR,
-};
+use fvm_shared::{address::Address, error::ExitCode, ActorID, METHOD_CONSTRUCTOR};
 use num_derive::FromPrimitive;
-use num_traits::Zero;
 
-use ext::{
-    account::PUBKEY_ADDRESS_METHOD,
-    init::{ExecParams, ExecReturn},
-};
-use fil_actors_evm_shared::address::EthAddress;
+use ext::init::{ExecParams, ExecReturn};
 use fil_actors_runtime::{
     actor_dispatch_unrestricted, actor_error, deserialize_block, extract_send_result,
     runtime::{builtins::Type, ActorCode, Runtime},
-    ActorDowncast, ActorError, AsActorError, ADM_ACTOR_ID, EAM_ACTOR_ID, INIT_ACTOR_ADDR,
-    SYSTEM_ACTOR_ADDR,
+    ActorDowncast, ActorError, ADM_ACTOR_ID, INIT_ACTOR_ADDR, SYSTEM_ACTOR_ADDR,
 };
 
 use crate::state::PermissionMode;
@@ -42,6 +30,7 @@ pub enum Method {
     Constructor = METHOD_CONSTRUCTOR,
     CreateExternal = 2,
     UpdateDeployers = 3,
+    ListByOwner = 4,
 }
 
 #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
@@ -55,14 +44,19 @@ pub struct CreateExternalReturn {
     pub robust_address: Option<Address>,
 }
 
-/// hash of data with Keccack256, with first 12 bytes cropped
-fn hash_20(rt: &impl Runtime, data: &[u8]) -> [u8; 20] {
-    rt.hash(SupportedHashes::Keccak256, data)[12..32].try_into().unwrap()
+#[derive(Debug, Serialize_tuple, Deserialize_tuple)]
+pub struct ListByOwnerParams {
+    pub owner: Address,
+}
+
+#[derive(Serialize_tuple, Deserialize_tuple, Debug, PartialEq, Eq)]
+pub struct ListByOwnerReturn {
+    pub machines: Vec<Address>,
 }
 
 fn create_machine(
     rt: &impl Runtime,
-    creator: EthAddress,
+    creator: ActorID,
     code_cid: Cid,
 ) -> Result<CreateExternalReturn, ActorError> {
     let constructor_params = RawBytes::serialize(ext::machine::ConstructorParams { creator })?;
@@ -105,53 +99,12 @@ fn ensure_deployer_allowed(rt: &impl Runtime) -> Result<(), ActorError> {
     Ok(())
 }
 
-fn resolve_eth_address(rt: &impl Runtime, actor_id: ActorID) -> Result<EthAddress, ActorError> {
-    match rt.lookup_delegated_address(actor_id).map(|a| *a.payload()) {
-        Some(Payload::Delegated(addr)) if addr.namespace() == EAM_ACTOR_ID => Ok(EthAddress(
-            addr.subaddress()
-                .try_into()
-                .context_code(ExitCode::USR_FORBIDDEN, "caller's eth address isn't valid")?,
-        )),
-        _ => Err(actor_error!(forbidden; "caller doesn't have an eth address")),
-    }
-}
-
-fn resolve_caller_external(rt: &impl Runtime) -> Result<(EthAddress, EthAddress), ActorError> {
+fn resolve_caller_external(rt: &impl Runtime) -> Result<ActorID, ActorError> {
     let caller = rt.message().caller();
     let caller_id = caller.id().unwrap();
     let caller_code_cid = rt.get_actor_code_cid(&caller_id).expect("failed to lookup caller code");
     match rt.resolve_builtin_actor_type(&caller_code_cid) {
-        Some(Type::Account) => {
-            let result = rt
-                .send(
-                    &caller,
-                    PUBKEY_ADDRESS_METHOD,
-                    None,
-                    Zero::zero(),
-                    None,
-                    SendFlags::READ_ONLY,
-                )
-                .context_code(
-                    ExitCode::USR_ASSERTION_FAILED,
-                    "account failed to return its key address",
-                )?;
-
-            if !result.exit_code.is_success() {
-                return Err(ActorError::checked(
-                    result.exit_code,
-                    "failed to retrieve account robust address".to_string(),
-                    None,
-                ));
-            }
-            let robust_addr: Address = deserialize_block(result.return_data)?;
-            let robust_eth_bytes = hash_20(rt, &robust_addr.to_bytes());
-
-            Ok((EthAddress::from_id(caller_id), EthAddress(robust_eth_bytes)))
-        }
-        Some(Type::EthAccount) => {
-            let addr = resolve_eth_address(rt, caller_id)?;
-            Ok((addr, addr))
-        }
+        Some(Type::Account) | Some(Type::EthAccount) => Ok(caller_id),
         Some(t) => Err(ActorError::forbidden(format!("disallowed caller type {}", t.name()))),
         None => Err(ActorError::forbidden(format!("disallowed caller code {caller_code_cid}"))),
     }
@@ -182,6 +135,8 @@ impl AdmActor {
     }
 
     fn update_deployers(rt: &impl Runtime, deployers: Vec<Address>) -> Result<(), ActorError> {
+        rt.validate_immediate_caller_accept_any()?;
+
         // Reject update if we're unrestricted.
         let state: State = rt.state()?;
         if !matches!(state.permission_mode, PermissionMode::AllowList(_)) {
@@ -221,9 +176,38 @@ impl AdmActor {
         // `resolve_caller_external` will check the actual types.
         rt.validate_immediate_caller_is(&[rt.message().origin()])?;
 
-        let (owner_addr, _) = resolve_caller_external(rt)?;
+        let creator = resolve_caller_external(rt)?;
         let machine_code = get_machine_code(rt, params.machine_name)?;
-        create_machine(rt, owner_addr, machine_code)
+        let ret = create_machine(rt, creator, machine_code)?;
+
+        // Save machine metadata.
+        // Currently, this is just owner info, but could be extended in the future.
+        rt.transaction(|st: &mut State, rt| {
+            st.set_owner(rt.store(), ret.robust_address.unwrap(), creator).map_err(|e| {
+                e.downcast_default(ExitCode::USR_ILLEGAL_ARGUMENT, "failed to set machine metadata")
+            })
+        })?;
+
+        Ok(ret)
+    }
+
+    /// List machines by owner.
+    pub fn list_by_owner(
+        rt: &impl Runtime,
+        params: ListByOwnerParams,
+    ) -> Result<ListByOwnerReturn, ActorError> {
+        rt.validate_immediate_caller_accept_any()?;
+
+        if let Some(owner) = rt.resolve_address(&params.owner) {
+            let machines = rt.transaction(|st: &mut State, rt| {
+                st.list_by_owner(rt.store(), owner).map_err(|e| {
+                    e.downcast_default(ExitCode::USR_ILLEGAL_ARGUMENT, "failed to list by owner")
+                })
+            })?;
+            Ok(ListByOwnerReturn { machines })
+        } else {
+            Err(ActorError::not_found(String::from("owner does not exist")))
+        }
     }
 }
 
@@ -244,6 +228,7 @@ impl ActorCode for AdmActor {
         Constructor => constructor,
         CreateExternal => create_external,
         UpdateDeployers => update_deployers,
+        ListByOwner => list_by_owner,
     }
 }
 

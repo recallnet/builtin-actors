@@ -1369,7 +1369,6 @@ version = "12.0.0"
 dependencies = [
  "anyhow",
  "cid 0.10.1",
- "fil_actors_evm_shared",
  "fil_actors_runtime",
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding",
