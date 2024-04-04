@@ -12,7 +12,7 @@ use std::collections::HashMap;
 
 pub type MachineCodes<BS> = Map2<BS, Vec<u8>, Cid>;
 pub type DeployerMap<BS> = Map2<BS, Address, ()>;
-pub type OwnerMap<BS> = Map2<BS, ActorID, Vec<ActorID>>;
+pub type OwnerMap<BS> = Map2<BS, ActorID, Vec<Address>>;
 
 /// The args used to create the permission mode in storage
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -36,7 +36,7 @@ pub enum PermissionMode {
 pub struct State {
     pub machines: Cid, // HAMT[u64]Cid
     pub permission_mode: PermissionMode,
-    pub owners: Cid, // HAMT[ActorID]Vec<ActorID>
+    pub owners: Cid, // HAMT[ActorID]Vec<Address>
 }
 
 impl State {
@@ -54,7 +54,7 @@ impl State {
         let permission_mode = match permission_mode {
             PermissionModeParams::Unrestricted => PermissionMode::Unrestricted,
             PermissionModeParams::AllowList(deployers) => {
-                let mut deployers_map = DeployerMap::empty(store, DEFAULT_HAMT_CONFIG, "verifiers");
+                let mut deployers_map = DeployerMap::empty(store, DEFAULT_HAMT_CONFIG, "deployers");
                 for d in deployers {
                     deployers_map.set(&d, ())?;
                 }
@@ -78,19 +78,6 @@ impl State {
         Ok(code)
     }
 
-    pub fn list_machines<BS: Blockstore>(
-        &self,
-        store: &BS,
-        owner: ActorID,
-    ) -> Result<Vec<ActorID>, ActorError> {
-        let owners = OwnerMap::load(store, &self.owners, DEFAULT_HAMT_CONFIG, "owners")?;
-        let machines = match owners.get(&owner)? {
-            Some(machines) => machines.to_owned(),
-            None => vec![],
-        };
-        Ok(machines)
-    }
-
     pub fn set_deployers<BS: Blockstore>(
         &mut self,
         store: &BS,
@@ -103,7 +90,7 @@ impl State {
                 ));
             }
             PermissionMode::AllowList(_) => {
-                let mut deployers_map = DeployerMap::empty(store, DEFAULT_HAMT_CONFIG, "empty");
+                let mut deployers_map = DeployerMap::empty(store, DEFAULT_HAMT_CONFIG, "deployers");
                 for d in deployers {
                     deployers_map.set(&d, ())?;
                 }
@@ -118,7 +105,7 @@ impl State {
             PermissionMode::Unrestricted => true,
             PermissionMode::AllowList(cid) => {
                 let deployers =
-                    DeployerMap::load(rt.store(), cid, DEFAULT_HAMT_CONFIG, "verifiers")?;
+                    DeployerMap::load(rt.store(), cid, DEFAULT_HAMT_CONFIG, "deployers")?;
                 let mut allowed = false;
                 deployers.for_each(|k, _| {
                     // Normalize allowed addresses to ID addresses, so we can compare any kind of allowlisted address.
@@ -132,6 +119,31 @@ impl State {
                 allowed
             }
         })
+    }
+
+    pub fn list_by_owner<BS: Blockstore>(
+        &self,
+        store: &BS,
+        owner: ActorID,
+    ) -> anyhow::Result<Vec<Address>> {
+        let owners = OwnerMap::load(store, &self.owners, DEFAULT_HAMT_CONFIG, "owners")?;
+        let machines = owners.get(&owner)?.map(|machines| machines.to_owned()).unwrap_or_default();
+        Ok(machines)
+    }
+
+    pub fn set_owner<BS: Blockstore>(
+        &mut self,
+        store: &BS,
+        machine: Address,
+        owner: ActorID,
+    ) -> anyhow::Result<()> {
+        let mut owners = OwnerMap::load(store, &self.owners, DEFAULT_HAMT_CONFIG, "owners")?;
+        let mut machines =
+            owners.get(&owner)?.map(|machines| machines.to_owned()).unwrap_or_default();
+        machines.push(machine);
+        owners.set(&owner, machines)?;
+        self.owners = owners.flush()?;
+        Ok(())
     }
 }
 

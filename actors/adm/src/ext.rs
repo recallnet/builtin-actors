@@ -31,11 +31,11 @@ pub mod account {
 
 pub mod machine {
     use super::*;
-    use fil_actors_evm_shared::address::EthAddress;
+    use fvm_shared::ActorID;
 
     #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
     pub struct ConstructorParams {
         /// The machine's "creator"
-        pub creator: EthAddress,
+        pub creator: ActorID,
     }
 }
