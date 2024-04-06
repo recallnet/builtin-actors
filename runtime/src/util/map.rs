@@ -141,6 +141,7 @@ where
     }
 
     /// Iterates over all key-value pairs in the map.
+    #[allow(clippy::blocks_in_conditions)]
     pub fn for_each<F>(&self, mut f: F) -> Result<(), ActorError>
     where
         // Note the result type of F uses ActorError.

@@ -627,7 +627,7 @@ fn extend_expiration2_drop_claims() {
     let extension = 42 * rt.policy().wpost_proving_period;
     let new_expiration = old_sector.expiration + extension;
 
-    let claim_ids = vec![400, 500];
+    let claim_ids = [400, 500];
     let client = Address::new_id(3000).id().unwrap();
     let second_expiration = new_expiration + 42 * EPOCHS_IN_DAY;
 
@@ -792,7 +792,7 @@ fn update_expiration2_drop_claims_failure_cases() {
     let extension = 42 * rt.policy().wpost_proving_period;
     let new_expiration = old_sector.expiration + extension;
 
-    let claim_ids = vec![400, 500];
+    let claim_ids = [400, 500];
     let client = Address::new_id(3000).id().unwrap();
 
     let claim0 = make_claim(
@@ -889,7 +889,7 @@ fn update_expiration2_drop_claims_failure_cases() {
 }
 
 fn commit_sector_verified_deals(
-    verified_deals: &Vec<VerifiedDealInfo>,
+    verified_deals: &[VerifiedDealInfo],
     h: &mut ActorHarness,
     rt: &MockRuntime,
 ) -> SectorOnChainInfo {
@@ -897,7 +897,7 @@ fn commit_sector_verified_deals(
     assert!(!verified_deals.is_empty());
 
     let mut pcc = ProveCommitConfig::empty();
-    pcc.add_verified_deals(h.next_sector_no, verified_deals.clone());
+    pcc.add_verified_deals(h.next_sector_no, verified_deals.to_owned());
 
     let sector_info = &h.commit_and_prove_sectors_with_cfgs(
         rt,
