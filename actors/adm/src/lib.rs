@@ -1,23 +1,28 @@
-// Copyright 2024 ADM
+// Copyright 2024 ADM Contributors
+// Copyright 2022-2024 Protocol Labs
+// SPDX-License-Identifier: Apache-2.0, MIT
 
 use std::collections::HashMap;
 use std::iter;
 
 use cid::Cid;
-use fvm_ipld_encoding::{ipld_block::IpldBlock, tuple::*, RawBytes};
-use fvm_shared::{address::Address, error::ExitCode, ActorID, METHOD_CONSTRUCTOR};
-use num_derive::FromPrimitive;
-
+use ext::account::PUBKEY_ADDRESS_METHOD;
 use ext::init::{ExecParams, ExecReturn};
 use ext::machine::WriteAccess;
 use fil_actors_runtime::{
     actor_dispatch_unrestricted, actor_error, deserialize_block, extract_send_result,
     runtime::{builtins::Type, ActorCode, Runtime},
-    ActorDowncast, ActorError, ADM_ACTOR_ID, INIT_ACTOR_ADDR, SYSTEM_ACTOR_ADDR,
+    ActorDowncast, ActorError, AsActorError, ADM_ACTOR_ID, INIT_ACTOR_ADDR, SYSTEM_ACTOR_ADDR,
 };
+use fvm_ipld_encoding::{ipld_block::IpldBlock, tuple::*, RawBytes};
+use fvm_shared::address::Payload;
+use fvm_shared::sys::SendFlags;
+use fvm_shared::{address::Address, error::ExitCode, ActorID, METHOD_CONSTRUCTOR};
+use num_derive::FromPrimitive;
+use num_traits::Zero;
 
 use crate::state::PermissionMode;
-pub use crate::state::{PermissionModeParams, State};
+pub use crate::state::{Kind, Metadata, PermissionModeParams, State};
 
 pub mod ext;
 mod state;
@@ -31,12 +36,18 @@ pub enum Method {
     Constructor = METHOD_CONSTRUCTOR,
     CreateExternal = 2,
     UpdateDeployers = 3,
-    ListByOwner = 4,
+    ListMetadata = 4,
+}
+
+#[derive(Debug, Serialize_tuple, Deserialize_tuple)]
+pub struct ConstructorParams {
+    pub machine_codes: HashMap<Kind, Cid>,
+    pub permission_mode: PermissionModeParams,
 }
 
 #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
 pub struct CreateExternalParams {
-    pub machine_name: String,
+    pub kind: Kind,
     pub write_access: WriteAccess,
 }
 
@@ -47,13 +58,13 @@ pub struct CreateExternalReturn {
 }
 
 #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
-pub struct ListByOwnerParams {
+pub struct ListMetadataParams {
     pub owner: Address,
 }
 
 fn create_machine(
     rt: &impl Runtime,
-    creator: ActorID,
+    creator: Address,
     write_access: WriteAccess,
     code_cid: Cid,
 ) -> Result<CreateExternalReturn, ActorError> {
@@ -98,22 +109,57 @@ fn ensure_deployer_allowed(rt: &impl Runtime) -> Result<(), ActorError> {
     Ok(())
 }
 
-fn resolve_caller_external(rt: &impl Runtime) -> Result<ActorID, ActorError> {
+fn resolve_caller_external(rt: &impl Runtime) -> Result<Address, ActorError> {
     let caller = rt.message().caller();
     let caller_id = caller.id().unwrap();
     let caller_code_cid = rt.get_actor_code_cid(&caller_id).expect("failed to lookup caller code");
     match rt.resolve_builtin_actor_type(&caller_code_cid) {
-        Some(Type::Account) | Some(Type::EthAccount) => Ok(caller_id),
+        Some(Type::Account) => {
+            let result = rt
+                .send(
+                    &caller,
+                    PUBKEY_ADDRESS_METHOD,
+                    None,
+                    Zero::zero(),
+                    None,
+                    SendFlags::READ_ONLY,
+                )
+                .context_code(
+                    ExitCode::USR_ASSERTION_FAILED,
+                    "account failed to return its key address",
+                )?;
+
+            if !result.exit_code.is_success() {
+                return Err(ActorError::checked(
+                    result.exit_code,
+                    "failed to retrieve account robust address".to_string(),
+                    None,
+                ));
+            }
+            let robust_addr: Address = deserialize_block(result.return_data)?;
+
+            Ok(robust_addr)
+        }
+        Some(Type::EthAccount) => {
+            if let Some(delegated_addr) = rt.lookup_delegated_address(caller_id) {
+                Ok(delegated_addr)
+            } else {
+                Err(ActorError::forbidden(format!(
+                    "actor {} does not have delegated address",
+                    caller_id
+                )))
+            }
+        }
         Some(t) => Err(ActorError::forbidden(format!("disallowed caller type {}", t.name()))),
         None => Err(ActorError::forbidden(format!("disallowed caller code {caller_code_cid}"))),
     }
 }
 
-fn get_machine_code(rt: &impl Runtime, name: String) -> Result<Cid, ActorError> {
+fn get_machine_code(rt: &impl Runtime, kind: &Kind) -> Result<Cid, ActorError> {
     let st: State = rt.state()?;
-    match st.get_machine_code(rt.store(), name.clone())? {
+    match st.get_machine_code(rt.store(), kind)? {
         Some(code) => Ok(code),
-        None => Err(ActorError::not_found(format!("machine code for name '{}' not found", name))),
+        None => Err(ActorError::not_found(format!("machine code for kind '{}' not found", kind))),
     }
 }
 
@@ -176,13 +222,13 @@ impl AdmActor {
         rt.validate_immediate_caller_is(&[rt.message().origin()])?;
 
         let creator = resolve_caller_external(rt)?;
-        let machine_code = get_machine_code(rt, params.machine_name)?;
+        let machine_code = get_machine_code(rt, &params.kind)?;
         let ret = create_machine(rt, creator, params.write_access, machine_code)?;
 
         // Save machine metadata.
-        // Currently, this is just owner info, but could be extended in the future.
+        let address = ret.robust_address.expect("rubust address");
         rt.transaction(|st: &mut State, rt| {
-            st.set_owner(rt.store(), ret.robust_address.unwrap(), creator).map_err(|e| {
+            st.set_metadata(rt.store(), creator, address, params.kind).map_err(|e| {
                 e.downcast_default(ExitCode::USR_ILLEGAL_ARGUMENT, "failed to set machine metadata")
             })
         })?;
@@ -190,30 +236,25 @@ impl AdmActor {
         Ok(ret)
     }
 
-    /// List machines by owner.
-    pub fn list_by_owner(
+    /// Returns a list of machine metadata by owner.
+    ///
+    /// Metadata includes machine kind and address.
+    pub fn list_metadata(
         rt: &impl Runtime,
-        params: ListByOwnerParams,
-    ) -> Result<Vec<Address>, ActorError> {
+        params: ListMetadataParams,
+    ) -> Result<Vec<Metadata>, ActorError> {
         rt.validate_immediate_caller_accept_any()?;
 
-        if let Some(owner) = rt.resolve_address(&params.owner) {
-            let machines = rt.transaction(|st: &mut State, rt| {
-                st.list_by_owner(rt.store(), owner).map_err(|e| {
-                    e.downcast_default(ExitCode::USR_ILLEGAL_ARGUMENT, "failed to list by owner")
-                })
-            })?;
-            Ok(machines)
-        } else {
-            Err(ActorError::not_found(String::from("owner does not exist")))
+        if let &Payload::ID(_) = params.owner.payload() {
+            return Err(ActorError::illegal_argument(String::from("robust address required")));
         }
-    }
-}
 
-#[derive(Debug, Serialize_tuple, Deserialize_tuple)]
-pub struct ConstructorParams {
-    machine_codes: HashMap<String, Cid>,
-    permission_mode: PermissionModeParams,
+        let st: State = rt.state()?;
+        let metadata = st.get_metadata(rt.store(), params.owner).map_err(|e| {
+            e.downcast_default(ExitCode::USR_ILLEGAL_ARGUMENT, "failed to get metadata")
+        })?;
+        Ok(metadata)
+    }
 }
 
 impl ActorCode for AdmActor {
@@ -227,88 +268,6 @@ impl ActorCode for AdmActor {
         Constructor => constructor,
         CreateExternal => create_external,
         UpdateDeployers => update_deployers,
-        ListByOwner => list_by_owner,
+        ListMetadata => list_metadata,
     }
 }
-
-// #[cfg(test)]
-// mod test {
-//     use fil_actors_runtime::test_utils::MockRuntime;
-//     use fvm_shared::error::ExitCode;
-//
-//     use crate::compute_address_create2;
-//
-//     use super::{compute_address_create, create_actor, EthAddress};
-//
-//     #[test]
-//     fn test_create_actor_rejects() {
-//         let rt = MockRuntime::default();
-//         let creator = EthAddress::from_id(1);
-//
-//         // Reject ID.
-//         let new_addr = EthAddress::from_id(8224);
-//         assert_eq!(
-//             ExitCode::USR_FORBIDDEN,
-//             create_actor(&rt, creator, new_addr, Vec::new()).unwrap_err().exit_code()
-//         );
-//
-//         // Reject EVM Precompile.
-//         let mut new_addr = EthAddress::null();
-//         new_addr.0[19] = 0x20;
-//         assert_eq!(
-//             ExitCode::USR_FORBIDDEN,
-//             create_actor(&rt, creator, new_addr, Vec::new()).unwrap_err().exit_code()
-//         );
-//
-//         // Reject Native Precompile.
-//         new_addr.0[0] = 0xfe;
-//         assert_eq!(
-//             ExitCode::USR_FORBIDDEN,
-//             create_actor(&rt, creator, new_addr, Vec::new()).unwrap_err().exit_code()
-//         );
-//
-//         // Reject Null.
-//         let new_addr = EthAddress::null();
-//         assert_eq!(
-//             ExitCode::USR_FORBIDDEN,
-//             create_actor(&rt, creator, new_addr, Vec::new()).unwrap_err().exit_code()
-//         );
-//     }
-//
-//     #[test]
-//     fn test_create_address() {
-//         let rt = MockRuntime::default();
-//         // check addresses against externally generated cases
-//         for (from, nonce, expected) in &[
-//             ([0u8; 20], 0u64, hex_literal::hex!("bd770416a3345f91e4b34576cb804a576fa48eb1")),
-//             ([0; 20], 200, hex_literal::hex!("a6b14387c1356b443061155e9c3e17f72c1777e5")),
-//             ([123; 20], 12345, hex_literal::hex!("809a9ab0471e78ee5100e96ca4d0828d1b97e2ba")),
-//         ] {
-//             let result = compute_address_create(&rt, &EthAddress(*from), *nonce);
-//             assert_eq!(result.0[..], expected[..]);
-//         }
-//     }
-//
-//     #[test]
-//     fn test_create_address2() {
-//         let rt = MockRuntime::default();
-//         // check addresses against externally generated cases
-//         for (from, salt, initcode, expected) in &[
-//             (
-//                 [0u8; 20],
-//                 [0u8; 32],
-//                 &b""[..],
-//                 hex_literal::hex!("e33c0c7f7df4809055c3eba6c09cfe4baf1bd9e0"),
-//             ),
-//             (
-//                 [0x99u8; 20],
-//                 [0x42; 32],
-//                 &b"foobar"[..],
-//                 hex_literal::hex!("64425c93a90901271fa355c2bc462190803b97d4"),
-//             ),
-//         ] {
-//             let result = compute_address_create2(&rt, &EthAddress(*from), salt, initcode);
-//             assert_eq!(result.0[..], expected[..]);
-//         }
-//     }
-// }

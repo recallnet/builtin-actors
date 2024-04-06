@@ -1,3 +1,7 @@
+// Copyright 2024 ADM Contributors
+// Copyright 2022-2024 Protocol Labs
+// SPDX-License-Identifier: Apache-2.0, MIT
+
 use fvm_ipld_encoding::tuple::*;
 use serde::{Deserialize, Serialize};
 
@@ -9,19 +13,19 @@ pub mod init {
 
     pub const EXEC_METHOD: u64 = 2;
 
-    /// Init actor Exec Params
+    /// Init actor Exec Params.
     #[derive(Serialize_tuple, Deserialize_tuple)]
     pub struct ExecParams {
         pub code_cid: Cid,
         pub constructor_params: RawBytes,
     }
 
-    /// Init actor Exec Return value
+    /// Init actor Exec Return value.
     #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
     pub struct ExecReturn {
-        /// ID based address for created actor
+        /// ID based address for created actor.
         pub id_address: Address,
-        /// Reorg safe address for actor
+        /// Reorg safe address for actor.
         pub robust_address: Address,
     }
 }
@@ -32,12 +36,12 @@ pub mod account {
 
 pub mod machine {
     use super::*;
-    use fvm_shared::ActorID;
+    use fvm_shared::address::Address;
 
     #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
     pub struct ConstructorParams {
-        /// The machine creator.
-        pub creator: ActorID,
+        /// The machine creator robust address.
+        pub creator: Address,
         /// Write access dictates who can write to the machine.
         pub write_access: WriteAccess,
     }

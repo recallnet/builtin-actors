@@ -21,6 +21,7 @@ fvm_ipld_blockstore = { workspace = true }
 fvm_ipld_encoding = { workspace = true }
 fvm_shared = { workspace = true }
 hex-literal = { workspace = true }
+integer-encoding = { workspace = true }
 log = { workspace = true }
 multihash = { workspace = true }
 num-derive = { workspace = true }
