@@ -1,10 +1,11 @@
-use cid::Cid;
 use fvm_ipld_encoding::tuple::*;
-use fvm_ipld_encoding::RawBytes;
-use fvm_shared::address::Address;
+use serde::{Deserialize, Serialize};
 
 pub mod init {
     use super::*;
+    use cid::Cid;
+    use fvm_ipld_encoding::RawBytes;
+    use fvm_shared::address::Address;
 
     pub const EXEC_METHOD: u64 = 2;
 
@@ -35,7 +36,18 @@ pub mod machine {
 
     #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
     pub struct ConstructorParams {
-        /// The machine's "creator"
+        /// The machine creator.
         pub creator: ActorID,
+        /// Write access dictates who can write to the machine.
+        pub write_access: WriteAccess,
+    }
+
+    /// The different types of machine write access.
+    #[derive(Debug, Serialize, Deserialize)]
+    pub enum WriteAccess {
+        /// Only the owner can write to the machine.
+        OnlyOwner,
+        /// Any valid account can write to the machine.
+        Public,
     }
 }

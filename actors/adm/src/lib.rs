@@ -9,6 +9,7 @@ use fvm_shared::{address::Address, error::ExitCode, ActorID, METHOD_CONSTRUCTOR}
 use num_derive::FromPrimitive;
 
 use ext::init::{ExecParams, ExecReturn};
+use ext::machine::WriteAccess;
 use fil_actors_runtime::{
     actor_dispatch_unrestricted, actor_error, deserialize_block, extract_send_result,
     runtime::{builtins::Type, ActorCode, Runtime},
@@ -36,6 +37,7 @@ pub enum Method {
 #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
 pub struct CreateExternalParams {
     pub machine_name: String,
+    pub write_access: WriteAccess,
 }
 
 #[derive(Serialize_tuple, Deserialize_tuple, Debug, PartialEq, Eq)]
@@ -49,17 +51,14 @@ pub struct ListByOwnerParams {
     pub owner: Address,
 }
 
-#[derive(Serialize_tuple, Deserialize_tuple, Debug, PartialEq, Eq)]
-pub struct ListByOwnerReturn {
-    pub machines: Vec<Address>,
-}
-
 fn create_machine(
     rt: &impl Runtime,
     creator: ActorID,
+    write_access: WriteAccess,
     code_cid: Cid,
 ) -> Result<CreateExternalReturn, ActorError> {
-    let constructor_params = RawBytes::serialize(ext::machine::ConstructorParams { creator })?;
+    let constructor_params =
+        RawBytes::serialize(ext::machine::ConstructorParams { creator, write_access })?;
     let value = rt.message().value_received();
 
     let init_params = ExecParams { code_cid, constructor_params };
@@ -178,7 +177,7 @@ impl AdmActor {
 
         let creator = resolve_caller_external(rt)?;
         let machine_code = get_machine_code(rt, params.machine_name)?;
-        let ret = create_machine(rt, creator, machine_code)?;
+        let ret = create_machine(rt, creator, params.write_access, machine_code)?;
 
         // Save machine metadata.
         // Currently, this is just owner info, but could be extended in the future.
@@ -195,7 +194,7 @@ impl AdmActor {
     pub fn list_by_owner(
         rt: &impl Runtime,
         params: ListByOwnerParams,
-    ) -> Result<ListByOwnerReturn, ActorError> {
+    ) -> Result<Vec<Address>, ActorError> {
         rt.validate_immediate_caller_accept_any()?;
 
         if let Some(owner) = rt.resolve_address(&params.owner) {
@@ -204,7 +203,7 @@ impl AdmActor {
                     e.downcast_default(ExitCode::USR_ILLEGAL_ARGUMENT, "failed to list by owner")
                 })
             })?;
-            Ok(ListByOwnerReturn { machines })
+            Ok(machines)
         } else {
             Err(ActorError::not_found(String::from("owner does not exist")))
         }
