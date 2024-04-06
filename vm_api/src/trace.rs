@@ -1,3 +1,5 @@
+use std::fmt::Write;
+
 use fvm_ipld_encoding::ipld_block::IpldBlock;
 use fvm_shared::address::Address;
 use fvm_shared::econ::TokenAmount;
