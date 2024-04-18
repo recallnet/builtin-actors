@@ -216,7 +216,7 @@ mod tests {
                 let create_ret = eam::CreateReturn {
                     actor_id: 12345,
                     eth_address: ret_addr,
-                    robust_address: Some((&ret_addr).try_into().unwrap()),
+                    robust_address: Some((&ret_addr).into()),
                 };
 
                 rt.expect_gas_available(10_000_000_000);
@@ -249,7 +249,7 @@ mod tests {
             assert_eq!(m.state.stack.len(), 1);
             assert_eq!(m.state.stack.pop().unwrap(), ret_addr.as_evm_word());
             assert_eq!(m.system.nonce, 2);
-        };
+        }
     }
 
     #[test]
@@ -270,7 +270,7 @@ mod tests {
                 let create_ret = eam::CreateReturn {
                     actor_id: 12345,
                     eth_address: ret_addr,
-                    robust_address: Some((&ret_addr).try_into().unwrap()),
+                    robust_address: Some((&ret_addr).into()),
                 };
 
                 rt.expect_gas_available(10_000_000_000);
@@ -306,7 +306,7 @@ mod tests {
             assert_eq!(m.state.stack.pop().unwrap(), ret_addr.as_evm_word());
             assert_eq!(m.system.nonce, 2);
             assert!(m.state.return_data.is_empty());
-        };
+        }
     }
 
     #[test]
@@ -350,7 +350,7 @@ mod tests {
             assert_eq!(m.state.stack.len(), 1);
             assert_eq!(m.state.stack.pop().unwrap(), U256::from(0));
             assert_eq!(m.system.nonce, 2);
-        };
+        }
     }
 
     #[test]
@@ -376,7 +376,7 @@ mod tests {
             assert_eq!(m.state.stack.len(), 1);
             assert_eq!(m.state.stack.pop().unwrap(), U256::from(0));
             assert_eq!(m.system.nonce, 1);
-        };
+        }
     }
 
     #[test]
@@ -403,7 +403,7 @@ mod tests {
             assert_eq!(m.state.stack.len(), 1);
             assert_eq!(m.state.stack.pop().unwrap(), U256::from(0));
             assert_eq!(m.system.nonce, 1);
-        };
+        }
     }
 
     #[test]
@@ -431,7 +431,7 @@ mod tests {
             assert!(result.is_err());
             assert_eq!(result.err().unwrap().exit_code(), ExitCode::USR_READ_ONLY);
             assert_eq!(m.system.nonce, 1);
-        };
+        }
     }
 
     #[test]
@@ -460,7 +460,7 @@ mod tests {
             assert!(result.is_err());
             assert_eq!(result.err().unwrap().exit_code(), ExitCode::USR_READ_ONLY);
             assert_eq!(m.system.nonce, 1);
-        };
+        }
     }
 
     #[test]
@@ -506,7 +506,7 @@ mod tests {
             assert_eq!(m.state.stack.pop().unwrap(), U256::from(0));
             assert_eq!(m.system.nonce, 2);
             assert!(m.state.return_data.is_empty());
-        };
+        }
     }
 
     #[test]
@@ -553,7 +553,7 @@ mod tests {
             assert_eq!(m.state.stack.pop().unwrap(), U256::from(0));
             assert_eq!(m.system.nonce, 2);
             assert_eq!(m.state.return_data, revert_data)
-        };
+        }
     }
 
     #[test]

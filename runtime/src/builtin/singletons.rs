@@ -27,6 +27,7 @@ define_singletons! {
     DATACAP_TOKEN_ACTOR = 7,
     EAM_ACTOR = 10,
     BURNT_FUNDS_ACTOR = 99,
+    ADM_ACTOR = 17,
 }
 
 /// Defines first available ID address after builtin actors

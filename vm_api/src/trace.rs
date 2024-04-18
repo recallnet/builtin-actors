@@ -1,3 +1,5 @@
+use std::fmt::Write;
+
 use fvm_ipld_encoding::ipld_block::IpldBlock;
 use fvm_shared::address::Address;
 use fvm_shared::econ::TokenAmount;
@@ -125,18 +127,17 @@ impl ExpectInvocation {
     }
 
     pub fn fmt_invocs(&self, invocs: &[InvocationTrace]) -> String {
-        invocs
-            .iter()
-            .enumerate()
-            .map(|(i, invoc)| format!("{}: [{}:{}],\n", i, invoc.to, invoc.method))
-            .collect()
+        invocs.iter().enumerate().fold(String::new(), |mut out, (i, invoc)| {
+            let _ = writeln!(out, "{}: [{}:{}],", i, invoc.to, invoc.method);
+            out
+        })
     }
 
     pub fn fmt_expect_invocs(&self, exs: &[ExpectInvocation]) -> String {
-        exs.iter()
-            .enumerate()
-            .map(|(i, ex)| format!("{}: [{}:{}],\n", i, ex.to, ex.method))
-            .collect()
+        exs.iter().enumerate().fold(String::new(), |mut out, (i, ex)| {
+            let _ = writeln!(out, "{}: [{}:{}],\n", i, ex.to, ex.method);
+            out
+        })
     }
 
     pub fn quick_match(&self, invoc: &InvocationTrace, extra_msg: String) {

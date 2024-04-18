@@ -301,7 +301,7 @@ pub fn overdue_precommit_test(v: &dyn VM) {
     let sector_number: SectorNumber = 100;
     let precommit =
         precommit_sectors(v, 1, 1, &worker, &id_addr, seal_proof, sector_number, true, None)
-            .get(0)
+            .first()
             .unwrap()
             .clone();
 
