@@ -12,7 +12,6 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 use unsigned_varint::decode::Error as UVarintError;
 
-use builtin::HAMT_BIT_WIDTH;
 pub use dispatch::{dispatch, dispatch_default, WithCodec};
 pub use {fvm_ipld_amt, fvm_ipld_hamt};
 
@@ -66,19 +65,6 @@ where
     V: DeserializeOwned + Serialize,
 {
     Map::<_, V>::new_with_bit_width(store, bitwidth)
-}
-
-/// Create a map with a root cid.
-#[inline]
-pub fn make_map_with_root<'bs, BS, V>(
-    root: &Cid,
-    store: &'bs BS,
-) -> Result<Map<'bs, BS, V>, HamtError>
-where
-    BS: Blockstore,
-    V: DeserializeOwned + Serialize,
-{
-    Map::<_, V>::load_with_bit_width(root, store, HAMT_BIT_WIDTH)
 }
 
 /// Create a map with a root cid.

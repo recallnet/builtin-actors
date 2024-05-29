@@ -13,8 +13,8 @@ use fil_actors_runtime::cbor::serialize;
 use fil_actors_runtime::runtime::builtins::Type;
 use fil_actors_runtime::runtime::{Policy, Primitives, EMPTY_ARR_CID};
 use fil_actors_runtime::test_blockstores::MemoryBlockstore;
-use fil_actors_runtime::{test_utils::*, DEFAULT_HAMT_CONFIG};
-use fil_actors_runtime::{Map, DATACAP_TOKEN_ACTOR_ADDR};
+use fil_actors_runtime::DATACAP_TOKEN_ACTOR_ADDR;
+use fil_actors_runtime::{test_utils::*, Map2, DEFAULT_HAMT_CONFIG};
 use fil_actors_runtime::{
     BURNT_FUNDS_ACTOR_ADDR, CRON_ACTOR_ADDR, EAM_ACTOR_ADDR, INIT_ACTOR_ADDR, REWARD_ACTOR_ADDR,
     STORAGE_MARKET_ACTOR_ADDR, STORAGE_POWER_ACTOR_ADDR, SYSTEM_ACTOR_ADDR,
@@ -266,8 +266,8 @@ impl TestVM {
         self.actors_dirty.replace(false);
     }
 
-    fn actor_map(&self) -> Map<MemoryBlockstore, ActorState> {
-        Map::load_with_config(&self.checkpoint(), self.store.as_ref(), DEFAULT_HAMT_CONFIG).unwrap()
+    fn actor_map(&self) -> Map2<&MemoryBlockstore, Address, ActorState> {
+        Map2::load(self.store.as_ref(), &self.checkpoint(), DEFAULT_HAMT_CONFIG, "actors").unwrap()
     }
 }
 
@@ -285,11 +285,15 @@ impl VM for TestVM {
         params: Option<IpldBlock>,
     ) -> Result<MessageResult, VMError> {
         let from_id = &self.resolve_id_address(from).unwrap();
+        // TODO: for non-implicit calls validate that from_id is either the
+        // account actor or the ethereum account actor and error otherwise
         let mut a = self.actor(from_id).unwrap();
         let call_seq = a.sequence;
         a.sequence = call_seq + 1;
         // EthAccount abstractions turns Placeholders into EthAccounts
         if a.code == *PLACEHOLDER_ACTOR_CODE_ID {
+            // TODO: for non-implicit calls validate that the actor has a
+            // delegated f4 address in the EAM's namespace
             a.code = *ETHACCOUNT_ACTOR_CODE_ID;
         }
         self.set_actor(from_id, a);
@@ -376,7 +380,7 @@ impl VM for TestVM {
         }
         // go to persisted map
         let actors = self.actor_map();
-        let actor = actors.get(&address.to_bytes()).unwrap().cloned();
+        let actor = actors.get(address).unwrap().cloned();
         actor.iter().for_each(|a| {
             self.actors_cache.borrow_mut().insert(*address, a.clone());
         });
@@ -400,7 +404,7 @@ impl VM for TestVM {
         let map = self.actor_map();
         let mut tree = BTreeMap::new();
         map.for_each(|k, v| {
-            tree.insert(Address::from_bytes(k).unwrap(), v.clone());
+            tree.insert(k, v.clone());
             Ok(())
         })
         .unwrap();
