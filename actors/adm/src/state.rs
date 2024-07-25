@@ -99,6 +99,8 @@ pub struct Metadata {
     pub kind: Kind,
     /// Machine robust address.
     pub address: Address,
+    /// User-defined data.
+    pub metadata: HashMap<String, String>,
 }
 
 /// ADM actor state representation.
@@ -205,12 +207,13 @@ impl State {
         owner: Address,
         address: Address,
         kind: Kind,
+        metadata: HashMap<String, String>,
     ) -> anyhow::Result<()> {
         let mut owner_map = OwnerMap::load(store, &self.owners, DEFAULT_HAMT_CONFIG, "owners")?;
-        let mut metadata =
+        let mut machine_metadata =
             owner_map.get(&owner)?.map(|machines| machines.to_owned()).unwrap_or_default();
-        metadata.push(Metadata { kind, address });
-        owner_map.set(&owner, metadata)?;
+        machine_metadata.push(Metadata { kind, address, metadata });
+        owner_map.set(&owner, machine_metadata)?;
         self.owners = owner_map.flush()?;
         Ok(())
     }
