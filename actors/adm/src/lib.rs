@@ -49,6 +49,7 @@ pub struct ConstructorParams {
 pub struct CreateExternalParams {
     pub kind: Kind,
     pub write_access: WriteAccess,
+    pub metadata: HashMap<String, String>,
 }
 
 #[derive(Serialize_tuple, Deserialize_tuple, Debug, PartialEq, Eq)]
@@ -67,9 +68,10 @@ fn create_machine(
     creator: Address,
     write_access: WriteAccess,
     code_cid: Cid,
+    metadata: HashMap<String, String>,
 ) -> Result<CreateExternalReturn, ActorError> {
     let constructor_params =
-        RawBytes::serialize(ext::machine::ConstructorParams { creator, write_access })?;
+        RawBytes::serialize(ext::machine::ConstructorParams { creator, write_access, metadata })?;
     let value = rt.message().value_received();
 
     let init_params = ExecParams { code_cid, constructor_params };
@@ -223,14 +225,25 @@ impl AdmActor {
 
         let creator = resolve_caller_external(rt)?;
         let machine_code = get_machine_code(rt, &params.kind)?;
-        let ret = create_machine(rt, creator, params.write_access, machine_code)?;
+        let ret = create_machine(
+            rt,
+            creator,
+            params.write_access,
+            machine_code,
+            params.metadata.clone(),
+        )?;
 
         // Save machine metadata.
         let address = ret.robust_address.expect("rubust address");
         rt.transaction(|st: &mut State, rt| {
-            st.set_metadata(rt.store(), creator, address, params.kind).map_err(|e| {
-                e.downcast_default(ExitCode::USR_ILLEGAL_ARGUMENT, "failed to set machine metadata")
-            })
+            st.set_metadata(rt.store(), creator, address, params.kind, params.metadata).map_err(
+                |e| {
+                    e.downcast_default(
+                        ExitCode::USR_ILLEGAL_ARGUMENT,
+                        "failed to set machine metadata",
+                    )
+                },
+            )
         })?;
 
         Ok(ret)

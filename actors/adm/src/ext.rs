@@ -37,6 +37,7 @@ pub mod account {
 pub mod machine {
     use super::*;
     use fvm_shared::address::Address;
+    use std::collections::HashMap;
 
     #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
     pub struct ConstructorParams {
@@ -44,6 +45,8 @@ pub mod machine {
         pub creator: Address,
         /// Write access dictates who can write to the machine.
         pub write_access: WriteAccess,
+        /// User-defined metadata.
+        pub metadata: HashMap<String, String>,
     }
 
     /// The different types of machine write access.
