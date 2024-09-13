@@ -72,16 +72,21 @@ fn create_machine(
 ) -> Result<CreateExternalReturn, ActorError> {
     let constructor_params =
         RawBytes::serialize(ext::machine::ConstructorParams { creator, write_access, metadata })?;
-    let value = rt.message().value_received();
-
-    let init_params = ExecParams { code_cid, constructor_params };
-
     let ret: ExecReturn = deserialize_block(extract_send_result(rt.send_simple(
         &INIT_ACTOR_ADDR,
         ext::init::EXEC_METHOD,
-        IpldBlock::serialize_cbor(&init_params)?,
-        value,
+        IpldBlock::serialize_cbor(&ExecParams { code_cid, constructor_params })?,
+        rt.message().value_received(),
     ))?)?;
+
+    extract_send_result(rt.send_simple(
+        &ret.id_address,
+        ext::machine::INIT_METHOD,
+        IpldBlock::serialize_cbor(&ext::machine::InitParams {
+            robust_address: ret.robust_address,
+        })?,
+        rt.message().value_received(),
+    ))?;
 
     Ok(CreateExternalReturn {
         actor_id: ret.id_address.id().unwrap(),
@@ -142,27 +147,18 @@ fn resolve_caller_external(rt: &impl Runtime) -> Result<Address, ActorError> {
 
             Ok(robust_addr)
         }
-        Some(Type::EthAccount) => {
-            if let Some(delegated_addr) = rt.lookup_delegated_address(caller_id) {
-                Ok(delegated_addr)
-            } else {
-                Err(ActorError::forbidden(format!(
-                    "actor {} does not have delegated address",
-                    caller_id
-                )))
-            }
-        }
+        Some(Type::EthAccount) | Some(Type::EVM) => rt.lookup_delegated_address(caller_id).ok_or(
+            ActorError::forbidden(format!("actor {} does not have delegated address", caller_id)),
+        ),
         Some(t) => Err(ActorError::forbidden(format!("disallowed caller type {}", t.name()))),
         None => Err(ActorError::forbidden(format!("disallowed caller code {caller_code_cid}"))),
     }
 }
 
 fn get_machine_code(rt: &impl Runtime, kind: &Kind) -> Result<Cid, ActorError> {
-    let st: State = rt.state()?;
-    match st.get_machine_code(rt.store(), kind)? {
-        Some(code) => Ok(code),
-        None => Err(ActorError::not_found(format!("machine code for kind '{}' not found", kind))),
-    }
+    rt.state::<State>()?
+        .get_machine_code(rt.store(), kind)?
+        .ok_or(ActorError::not_found(format!("machine code for kind '{}' not found", kind)))
 }
 
 pub struct AdmActor;
