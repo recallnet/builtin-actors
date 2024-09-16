@@ -43,8 +43,8 @@ pub mod machine {
 
     #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
     pub struct ConstructorParams {
-        /// The machine creator robust address.
-        pub creator: Address,
+        /// The machine owner robust address.
+        pub owner: Address,
         /// Write access dictates who can write to the machine.
         pub write_access: WriteAccess,
         /// User-defined metadata.

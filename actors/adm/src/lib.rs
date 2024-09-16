@@ -47,6 +47,7 @@ pub struct ConstructorParams {
 
 #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
 pub struct CreateExternalParams {
+    pub owner: Address,
     pub kind: Kind,
     pub write_access: WriteAccess,
     pub metadata: HashMap<String, String>,
@@ -65,13 +66,13 @@ pub struct ListMetadataParams {
 
 fn create_machine(
     rt: &impl Runtime,
-    creator: Address,
+    owner: Address,
     write_access: WriteAccess,
     code_cid: Cid,
     metadata: HashMap<String, String>,
 ) -> Result<CreateExternalReturn, ActorError> {
     let constructor_params =
-        RawBytes::serialize(ext::machine::ConstructorParams { creator, write_access, metadata })?;
+        RawBytes::serialize(ext::machine::ConstructorParams { owner, write_access, metadata })?;
     let ret: ExecReturn = deserialize_block(extract_send_result(rt.send_simple(
         &INIT_ACTOR_ADDR,
         ext::init::EXEC_METHOD,
@@ -79,6 +80,7 @@ fn create_machine(
         rt.message().value_received(),
     ))?)?;
 
+    // Initialize the machine with its robust address
     extract_send_result(rt.send_simple(
         &ret.id_address,
         ext::machine::INIT_METHOD,
@@ -116,15 +118,18 @@ fn ensure_deployer_allowed(rt: &impl Runtime) -> Result<(), ActorError> {
     Ok(())
 }
 
-fn resolve_caller_external(rt: &impl Runtime) -> Result<Address, ActorError> {
-    let caller = rt.message().caller();
-    let caller_id = caller.id().unwrap();
-    let caller_code_cid = rt.get_actor_code_cid(&caller_id).expect("failed to lookup caller code");
-    match rt.resolve_builtin_actor_type(&caller_code_cid) {
+fn resolve_external(rt: &impl Runtime, address: Address) -> Result<Address, ActorError> {
+    let actor_id = if let Ok(id) = address.id() {
+        id
+    } else {
+        return Ok(address);
+    };
+    let code_cid = rt.get_actor_code_cid(&actor_id).expect("failed to lookup caller code");
+    match rt.resolve_builtin_actor_type(&code_cid) {
         Some(Type::Account) => {
             let result = rt
                 .send(
-                    &caller,
+                    &address,
                     PUBKEY_ADDRESS_METHOD,
                     None,
                     Zero::zero(),
@@ -135,7 +140,6 @@ fn resolve_caller_external(rt: &impl Runtime) -> Result<Address, ActorError> {
                     ExitCode::USR_ASSERTION_FAILED,
                     "account failed to return its key address",
                 )?;
-
             if !result.exit_code.is_success() {
                 return Err(ActorError::checked(
                     result.exit_code,
@@ -144,14 +148,13 @@ fn resolve_caller_external(rt: &impl Runtime) -> Result<Address, ActorError> {
                 ));
             }
             let robust_addr: Address = deserialize_block(result.return_data)?;
-
             Ok(robust_addr)
         }
-        Some(Type::EthAccount) | Some(Type::EVM) => rt.lookup_delegated_address(caller_id).ok_or(
-            ActorError::forbidden(format!("actor {} does not have delegated address", caller_id)),
+        Some(Type::EthAccount) | Some(Type::EVM) => rt.lookup_delegated_address(actor_id).ok_or(
+            ActorError::forbidden(format!("actor {} does not have delegated address", actor_id)),
         ),
         Some(t) => Err(ActorError::forbidden(format!("disallowed caller type {}", t.name()))),
-        None => Err(ActorError::forbidden(format!("disallowed caller code {caller_code_cid}"))),
+        None => Err(ActorError::forbidden(format!("disallowed caller code {code_cid}"))),
     }
 }
 
@@ -219,27 +222,17 @@ impl AdmActor {
         // `resolve_caller_external` will check the actual types.
         rt.validate_immediate_caller_is(&[rt.message().origin()])?;
 
-        let creator = resolve_caller_external(rt)?;
+        let owner = resolve_external(rt, params.owner)?;
         let machine_code = get_machine_code(rt, &params.kind)?;
-        let ret = create_machine(
-            rt,
-            creator,
-            params.write_access,
-            machine_code,
-            params.metadata.clone(),
-        )?;
+        let ret =
+            create_machine(rt, owner, params.write_access, machine_code, params.metadata.clone())?;
 
         // Save machine metadata.
         let address = ret.robust_address.expect("rubust address");
         rt.transaction(|st: &mut State, rt| {
-            st.set_metadata(rt.store(), creator, address, params.kind, params.metadata).map_err(
-                |e| {
-                    e.downcast_default(
-                        ExitCode::USR_ILLEGAL_ARGUMENT,
-                        "failed to set machine metadata",
-                    )
-                },
-            )
+            st.set_metadata(rt.store(), owner, address, params.kind, params.metadata).map_err(|e| {
+                e.downcast_default(ExitCode::USR_ILLEGAL_ARGUMENT, "failed to set machine metadata")
+            })
         })?;
 
         Ok(ret)
