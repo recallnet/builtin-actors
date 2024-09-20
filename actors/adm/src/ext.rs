@@ -39,14 +39,22 @@ pub mod machine {
     use fvm_shared::address::Address;
     use std::collections::HashMap;
 
+    pub const INIT_METHOD: u64 = 2;
+
     #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
     pub struct ConstructorParams {
-        /// The machine creator robust address.
-        pub creator: Address,
+        /// The machine owner robust address.
+        pub owner: Address,
         /// Write access dictates who can write to the machine.
         pub write_access: WriteAccess,
         /// User-defined metadata.
         pub metadata: HashMap<String, String>,
+    }
+
+    #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
+    pub struct InitParams {
+        /// The machine reorg safe address.
+        pub robust_address: Address,
     }
 
     /// The different types of machine write access.
