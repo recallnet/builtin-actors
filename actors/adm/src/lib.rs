@@ -211,17 +211,12 @@ impl AdmActor {
     }
 
     /// Create a new machine from off-chain.
-    ///
-    /// Permissions: May be called by builtin or eth accounts.
     pub fn create_external(
         rt: &impl Runtime,
         params: CreateExternalParams,
     ) -> Result<CreateExternalReturn, ActorError> {
         ensure_deployer_allowed(rt)?;
-
-        // We only accept calls by top-level accounts.
-        // `resolve_caller_external` will check the actual types.
-        rt.validate_immediate_caller_is(&[rt.message().origin()])?;
+        rt.validate_immediate_caller_accept_any()?;
 
         let owner = resolve_external(rt, params.owner)?;
         let machine_code = get_machine_code(rt, &params.kind)?;
