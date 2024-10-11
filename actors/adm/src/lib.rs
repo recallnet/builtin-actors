@@ -34,9 +34,10 @@ fil_actors_runtime::wasm_trampoline!(AdmActor);
 #[repr(u64)]
 pub enum Method {
     Constructor = METHOD_CONSTRUCTOR,
-    CreateExternal = 2,
-    UpdateDeployers = 3,
-    ListMetadata = 4,
+    // Exported calls (computed via `frc42_dispatch::method_hash!` & hardcoded to avoid dependency issues)
+    CreateExternal = 1214262202,
+    UpdateDeployers = 1768606754,
+    ListMetadata = 2283215593,
 }
 
 #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
