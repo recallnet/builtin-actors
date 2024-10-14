@@ -211,17 +211,15 @@ impl AdmActor {
     }
 
     /// Create a new machine from off-chain.
-    ///
-    /// Permissions: May be called by builtin or eth accounts.
+    /// TODO: we'll want to revert this change (via `5f19742`) once we enable machine delegated
+    /// addresses, and also handle `create`-related methods similar to the EAM.
+    /// See here for context: https://github.com/hokunet/ipc/pull/252#issuecomment-2408701031
     pub fn create_external(
         rt: &impl Runtime,
         params: CreateExternalParams,
     ) -> Result<CreateExternalReturn, ActorError> {
         ensure_deployer_allowed(rt)?;
-
-        // We only accept calls by top-level accounts.
-        // `resolve_caller_external` will check the actual types.
-        rt.validate_immediate_caller_is(&[rt.message().origin()])?;
+        rt.validate_immediate_caller_accept_any()?;
 
         let owner = resolve_external(rt, params.owner)?;
         let machine_code = get_machine_code(rt, &params.kind)?;
