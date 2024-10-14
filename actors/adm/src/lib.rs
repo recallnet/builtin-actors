@@ -211,6 +211,9 @@ impl AdmActor {
     }
 
     /// Create a new machine from off-chain.
+    /// TODO: we'll want to revert this change (via `5f19742`) once we enable machine delegated
+    /// addresses, and also handle `create`-related methods similar to the EAM.
+    /// See here for context: https://github.com/hokunet/ipc/pull/252#issuecomment-2408701031
     pub fn create_external(
         rt: &impl Runtime,
         params: CreateExternalParams,
