@@ -41,8 +41,8 @@ pub enum PermissionMode {
 pub enum Kind {
     /// An object store with S3-like key semantics.
     ObjectStore,
-    /// An MMR accumulator.
-    Accumulator,
+    /// An MMR timehub.
+    Timehub,
 }
 
 impl MapKey for Kind {
@@ -53,7 +53,7 @@ impl MapKey for Kind {
             }
             match result {
                 0 => Ok(Kind::ObjectStore),
-                1 => Ok(Kind::Accumulator),
+                1 => Ok(Kind::Timehub),
                 _ => Err(format!("failed to decode kind from {}", result)),
             }
         } else {
@@ -64,7 +64,7 @@ impl MapKey for Kind {
     fn to_bytes(&self) -> Result<Vec<u8>, String> {
         let int = match self {
             Self::ObjectStore => 0,
-            Self::Accumulator => 1,
+            Self::Timehub => 1,
         };
         Ok(int.encode_var_vec())
     }
@@ -76,7 +76,7 @@ impl FromStr for Kind {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(match s {
             "objectstore" => Self::ObjectStore,
-            "accumulator" => Self::Accumulator,
+            "timehub" => Self::Timehub,
             _ => return Err(anyhow!("invalid machine kind")),
         })
     }
@@ -86,7 +86,7 @@ impl Display for Kind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let str = match self {
             Self::ObjectStore => "objectstore",
-            Self::Accumulator => "accumulator",
+            Self::Timehub => "timehub",
         };
         write!(f, "{}", str)
     }
