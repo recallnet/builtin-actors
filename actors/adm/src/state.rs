@@ -39,8 +39,8 @@ pub enum PermissionMode {
 /// The kinds of machines available. Their code Cids are given at genesis.
 #[derive(Debug, Clone, Copy, Eq, PartialEq, Hash, Serialize, Deserialize)]
 pub enum Kind {
-    /// An object store with S3-like key semantics.
-    ObjectStore,
+    /// An object storage bucket with S3-like key semantics.
+    Bucket,
     /// An MMR timehub.
     Timehub,
 }
@@ -52,7 +52,7 @@ impl MapKey for Kind {
                 return Err(format!("trailing bytes after varint in {:?}", b));
             }
             match result {
-                0 => Ok(Kind::ObjectStore),
+                0 => Ok(Kind::Bucket),
                 1 => Ok(Kind::Timehub),
                 _ => Err(format!("failed to decode kind from {}", result)),
             }
@@ -63,7 +63,7 @@ impl MapKey for Kind {
 
     fn to_bytes(&self) -> Result<Vec<u8>, String> {
         let int = match self {
-            Self::ObjectStore => 0,
+            Self::Bucket => 0,
             Self::Timehub => 1,
         };
         Ok(int.encode_var_vec())
@@ -75,7 +75,7 @@ impl FromStr for Kind {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         Ok(match s {
-            "objectstore" => Self::ObjectStore,
+            "bucket" => Self::Bucket,
             "timehub" => Self::Timehub,
             _ => return Err(anyhow!("invalid machine kind")),
         })
@@ -85,7 +85,7 @@ impl FromStr for Kind {
 impl Display for Kind {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let str = match self {
-            Self::ObjectStore => "objectstore",
+            Self::Bucket => "bucket",
             Self::Timehub => "timehub",
         };
         write!(f, "{}", str)
