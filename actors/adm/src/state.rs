@@ -43,6 +43,8 @@ pub enum Kind {
     Bucket,
     /// An MMR timehub.
     Timehub,
+    /// Sqlite actor
+    Sqlite,
 }
 
 impl MapKey for Kind {
@@ -54,6 +56,7 @@ impl MapKey for Kind {
             match result {
                 0 => Ok(Kind::Bucket),
                 1 => Ok(Kind::Timehub),
+                2 => Ok(Kind::Sqlite),
                 _ => Err(format!("failed to decode kind from {}", result)),
             }
         } else {
@@ -65,6 +68,7 @@ impl MapKey for Kind {
         let int = match self {
             Self::Bucket => 0,
             Self::Timehub => 1,
+            Self::Sqlite => 2,
         };
         Ok(int.encode_var_vec())
     }
@@ -77,6 +81,7 @@ impl FromStr for Kind {
         Ok(match s {
             "bucket" => Self::Bucket,
             "timehub" => Self::Timehub,
+            "sqlite" => Self::Sqlite,
             _ => return Err(anyhow!("invalid machine kind")),
         })
     }
@@ -87,6 +92,7 @@ impl Display for Kind {
         let str = match self {
             Self::Bucket => "bucket",
             Self::Timehub => "timehub",
+            Self::Sqlite => "sqlite",
         };
         write!(f, "{}", str)
     }
