@@ -2,6 +2,7 @@ use anyhow::anyhow;
 use cid::multihash::Code;
 use cid::Cid;
 use fil_actor_account::Actor as AccountActor;
+use fil_actor_adm::AdmActor;
 use fil_actor_cron::Actor as CronActor;
 use fil_actor_datacap::Actor as DataCapActor;
 use fil_actor_eam::EamActor;
@@ -291,6 +292,7 @@ impl<'invocation> InvocationCtx<'invocation> {
             Type::EVM => EvmContractActor::invoke_method(self, self.msg.method, params),
             Type::EAM => EamActor::invoke_method(self, self.msg.method, params),
             Type::EthAccount => EthAccountActor::invoke_method(self, self.msg.method, params),
+            Type::ADM => AdmActor::invoke_method(self, self.msg.method, params),
         };
         if res.is_ok() && !*self.caller_validated.borrow() {
             res = Err(actor_error!(assertion_failed, "failed to validate caller"));

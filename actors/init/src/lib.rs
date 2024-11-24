@@ -185,5 +185,5 @@ fn can_exec(rt: &impl Runtime, caller: &Cid, exec: &Cid) -> bool {
             Type::Miner if rt.resolve_builtin_actor_type(caller) == Some(Type::Power) => true,
             _ => false,
         })
-        .unwrap_or(false)
+        .unwrap_or(rt.resolve_builtin_actor_type(caller) == Some(Type::ADM))
 }

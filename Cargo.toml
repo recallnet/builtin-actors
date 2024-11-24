@@ -1,12 +1,12 @@
 [workspace]
 resolver = "2"
 members = [
-     "actors/*",
-     "state",
-     "runtime",
-     "test_vm",
-     "vm_api",
-     "integration_tests",
+    "actors/*",
+    "state",
+    "runtime",
+    "test_vm",
+    "vm_api",
+    "integration_tests",
 ]
 
 [workspace.package]
@@ -55,11 +55,11 @@ num-traits = { workspace = true }
 
 [dependencies]
 clap = { version = "4.3.0", features = [
-     "derive",
-     "std",
-     "help",
-     "usage",
-     "error-context",
+    "derive",
+    "std",
+    "help",
+    "usage",
+    "error-context",
 ], default-features = false }
 
 [features]
@@ -117,11 +117,11 @@ substrate-bn = { version = "0.6.0", default-features = false }
 
 # IPLD/Encoding
 cid = { version = "0.10.1", default-features = false, features = [
-     "serde-codec",
-     "std",
+    "serde-codec",
+    "std",
 ] }
 multihash = { version = "0.18.1", default-features = false, features = [
-     "multihash-impl",
+    "multihash-impl",
 ] }
 libipld-core = { version = "0.13.1", features = ["serde-codec"] }
 integer-encoding = { version = "3.0.3", default-features = false }
@@ -164,6 +164,9 @@ fil_builtin_actors_state = { path = "state" }
 fil_actors_integration_tests = { version = "1.0.0", path = "integration_tests" }
 vm_api = { version = "1.0.0", path = "vm_api" }
 test_vm = { path = "test_vm" }
+
+# ADM workspace
+fil_actor_adm = { path = "actors/adm" }
 
 [patch.crates-io]
 #fvm_shared = { git = "https://github.com/filecoin-project/ref-fvm", branch = "master" }
