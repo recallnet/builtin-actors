@@ -152,6 +152,7 @@ pub struct MockRuntime {
     pub caller: RefCell<Address>,
     pub caller_type: RefCell<Cid>,
     pub origin: RefCell<Address>,
+    pub sponsor: RefCell<Option<Address>>,
     pub value_received: RefCell<TokenAmount>,
     #[allow(clippy::type_complexity)]
     pub hash_func: Box<dyn Fn(SupportedHashes, &[u8]) -> ([u8; 64], usize)>,
@@ -348,6 +349,7 @@ impl MockRuntime {
             caller: RefCell::new(Address::new_id(0)),
             caller_type: Default::default(),
             origin: RefCell::new(Address::new_id(0)),
+            sponsor: RefCell::new(None),
             value_received: Default::default(),
             hash_func: Box::new(hash),
             recover_secp_pubkey_fn: Box::new(recover_secp_public_key),
@@ -842,6 +844,9 @@ impl MessageInfo for MockRuntime {
     }
     fn origin(&self) -> Address {
         *self.origin.borrow()
+    }
+    fn sponsor(&self) -> Option<Address> {
+        *self.sponsor.borrow()
     }
     fn receiver(&self) -> Address {
         self.receiver

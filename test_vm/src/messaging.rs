@@ -94,6 +94,9 @@ impl MessageInfo for InvocationCtx<'_> {
     fn origin(&self) -> Address {
         Address::new_id(self.resolve_address(&self.top.originator_stable_addr).unwrap())
     }
+    fn sponsor(&self) -> Option<Address> {
+        None
+    }
     fn receiver(&self) -> Address {
         self.to()
     }

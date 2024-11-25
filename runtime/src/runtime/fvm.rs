@@ -95,6 +95,10 @@ impl MessageInfo for FvmMessage {
         Address::new_id(fvm::message::origin())
     }
 
+    fn sponsor(&self) -> Option<Address> {
+        fvm::message::sponsor().map(Address::new_id)
+    }
+
     fn receiver(&self) -> Address {
         Address::new_id(fvm::message::receiver())
     }
