@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 use fvm_ipld_encoding::tuple::*;
-use serde::{Deserialize, Serialize};
 
 pub mod init {
     use super::*;
@@ -45,8 +44,6 @@ pub mod machine {
     pub struct ConstructorParams {
         /// The machine owner robust address.
         pub owner: Address,
-        /// Write access dictates who can write to the machine.
-        pub write_access: WriteAccess,
         /// User-defined metadata.
         pub metadata: HashMap<String, String>,
     }
@@ -55,14 +52,5 @@ pub mod machine {
     pub struct InitParams {
         /// The machine reorg safe address.
         pub robust_address: Address,
-    }
-
-    /// The different types of machine write access.
-    #[derive(Debug, Serialize, Deserialize)]
-    pub enum WriteAccess {
-        /// Only the owner can write to the machine.
-        OnlyOwner,
-        /// Any valid account can write to the machine.
-        Public,
     }
 }

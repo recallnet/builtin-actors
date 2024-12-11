@@ -8,7 +8,6 @@ use std::iter;
 use cid::Cid;
 use ext::account::PUBKEY_ADDRESS_METHOD;
 use ext::init::{ExecParams, ExecReturn};
-use ext::machine::WriteAccess;
 use fil_actors_runtime::{
     actor_dispatch_unrestricted, actor_error, deserialize_block, extract_send_result,
     runtime::{builtins::Type, ActorCode, Runtime},
@@ -50,7 +49,6 @@ pub struct ConstructorParams {
 pub struct CreateExternalParams {
     pub owner: Address,
     pub kind: Kind,
-    pub write_access: WriteAccess,
     pub metadata: HashMap<String, String>,
 }
 
@@ -68,12 +66,11 @@ pub struct ListMetadataParams {
 fn create_machine(
     rt: &impl Runtime,
     owner: Address,
-    write_access: WriteAccess,
     code_cid: Cid,
     metadata: HashMap<String, String>,
 ) -> Result<CreateExternalReturn, ActorError> {
     let constructor_params =
-        RawBytes::serialize(ext::machine::ConstructorParams { owner, write_access, metadata })?;
+        RawBytes::serialize(ext::machine::ConstructorParams { owner, metadata })?;
     let ret: ExecReturn = deserialize_block(extract_send_result(rt.send_simple(
         &INIT_ACTOR_ADDR,
         ext::init::EXEC_METHOD,
@@ -223,8 +220,7 @@ impl AdmActor {
 
         let owner = resolve_external(rt, params.owner)?;
         let machine_code = get_machine_code(rt, &params.kind)?;
-        let ret =
-            create_machine(rt, owner, params.write_access, machine_code, params.metadata.clone())?;
+        let ret = create_machine(rt, owner, machine_code, params.metadata.clone())?;
 
         // Save machine metadata.
         let address = ret.robust_address.expect("rubust address");
