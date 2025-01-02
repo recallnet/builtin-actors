@@ -6,19 +6,15 @@ use std::collections::HashMap;
 use std::iter;
 
 use cid::Cid;
-use ext::account::PUBKEY_ADDRESS_METHOD;
 use ext::init::{ExecParams, ExecReturn};
 use fil_actors_runtime::{
     actor_dispatch_unrestricted, actor_error, deserialize_block, extract_send_result,
     runtime::{builtins::Type, ActorCode, Runtime},
-    ActorDowncast, ActorError, AsActorError, ADM_ACTOR_ID, INIT_ACTOR_ADDR, SYSTEM_ACTOR_ADDR,
+    ActorDowncast, ActorError, ADM_ACTOR_ID, INIT_ACTOR_ADDR, SYSTEM_ACTOR_ADDR,
 };
 use fvm_ipld_encoding::{ipld_block::IpldBlock, tuple::*, RawBytes};
-use fvm_shared::address::Payload;
-use fvm_shared::sys::SendFlags;
 use fvm_shared::{address::Address, error::ExitCode, ActorID, METHOD_CONSTRUCTOR};
 use num_derive::FromPrimitive;
-use num_traits::Zero;
 
 use crate::state::PermissionMode;
 pub use crate::state::{Kind, Metadata, PermissionModeParams, State};
@@ -78,20 +74,17 @@ fn create_machine(
         rt.message().value_received(),
     ))?)?;
 
-    // Initialize the machine with its robust address
+    // Initialize the machine with its address
+    let actor_id = ret.id_address.id().unwrap();
+    let address = Address::new_id(actor_id);
     extract_send_result(rt.send_simple(
         &ret.id_address,
         ext::machine::INIT_METHOD,
-        IpldBlock::serialize_cbor(&ext::machine::InitParams {
-            robust_address: ret.robust_address,
-        })?,
+        IpldBlock::serialize_cbor(&ext::machine::InitParams { address })?,
         rt.message().value_received(),
     ))?;
 
-    Ok(CreateExternalReturn {
-        actor_id: ret.id_address.id().unwrap(),
-        robust_address: Some(ret.robust_address),
-    })
+    Ok(CreateExternalReturn { actor_id, robust_address: Some(ret.robust_address) })
 }
 
 fn ensure_deployer_allowed(rt: &impl Runtime) -> Result<(), ActorError> {
@@ -114,46 +107,6 @@ fn ensure_deployer_allowed(rt: &impl Runtime) -> Result<(), ActorError> {
     }
 
     Ok(())
-}
-
-fn resolve_external(rt: &impl Runtime, address: Address) -> Result<Address, ActorError> {
-    let actor_id = if let Ok(id) = address.id() {
-        id
-    } else {
-        return Ok(address);
-    };
-    let code_cid = rt.get_actor_code_cid(&actor_id).expect("failed to lookup caller code");
-    match rt.resolve_builtin_actor_type(&code_cid) {
-        Some(Type::Account) => {
-            let result = rt
-                .send(
-                    &address,
-                    PUBKEY_ADDRESS_METHOD,
-                    None,
-                    Zero::zero(),
-                    None,
-                    SendFlags::READ_ONLY,
-                )
-                .context_code(
-                    ExitCode::USR_ASSERTION_FAILED,
-                    "account failed to return its key address",
-                )?;
-            if !result.exit_code.is_success() {
-                return Err(ActorError::checked(
-                    result.exit_code,
-                    "failed to retrieve account robust address".to_string(),
-                    None,
-                ));
-            }
-            let robust_addr: Address = deserialize_block(result.return_data)?;
-            Ok(robust_addr)
-        }
-        Some(Type::EthAccount) | Some(Type::EVM) => rt.lookup_delegated_address(actor_id).ok_or(
-            ActorError::forbidden(format!("actor {} does not have delegated address", actor_id)),
-        ),
-        Some(t) => Err(ActorError::forbidden(format!("disallowed caller type {}", t.name()))),
-        None => Err(ActorError::forbidden(format!("disallowed caller code {code_cid}"))),
-    }
 }
 
 fn get_machine_code(rt: &impl Runtime, kind: &Kind) -> Result<Cid, ActorError> {
@@ -208,9 +161,6 @@ impl AdmActor {
     }
 
     /// Create a new machine from off-chain.
-    /// TODO: we'll want to revert this change (via `5f19742`) once we enable machine delegated
-    /// addresses, and also handle `create`-related methods similar to the EAM.
-    /// See here for context: https://github.com/hokunet/ipc/pull/252#issuecomment-2408701031
     pub fn create_external(
         rt: &impl Runtime,
         params: CreateExternalParams,
@@ -218,12 +168,15 @@ impl AdmActor {
         ensure_deployer_allowed(rt)?;
         rt.validate_immediate_caller_accept_any()?;
 
-        let owner = resolve_external(rt, params.owner)?;
+        let owner_id = rt.resolve_address(&params.owner).ok_or(ActorError::illegal_argument(
+            format!("failed to resolve actor for address {}", params.owner),
+        ))?;
+        let owner = Address::new_id(owner_id);
         let machine_code = get_machine_code(rt, &params.kind)?;
         let ret = create_machine(rt, owner, machine_code, params.metadata.clone())?;
+        let address = Address::new_id(ret.actor_id);
 
         // Save machine metadata.
-        let address = ret.robust_address.expect("rubust address");
         rt.transaction(|st: &mut State, rt| {
             st.set_metadata(rt.store(), owner, address, params.kind, params.metadata).map_err(|e| {
                 e.downcast_default(ExitCode::USR_ILLEGAL_ARGUMENT, "failed to set machine metadata")
@@ -242,12 +195,13 @@ impl AdmActor {
     ) -> Result<Vec<Metadata>, ActorError> {
         rt.validate_immediate_caller_accept_any()?;
 
-        if let &Payload::ID(_) = params.owner.payload() {
-            return Err(ActorError::illegal_argument(String::from("robust address required")));
-        }
+        let owner_id = rt.resolve_address(&params.owner).ok_or(ActorError::illegal_argument(
+            format!("failed to resolve actor for address {}", params.owner),
+        ))?;
+        let owner_address = Address::new_id(owner_id);
 
         let st: State = rt.state()?;
-        let metadata = st.get_metadata(rt.store(), params.owner).map_err(|e| {
+        let metadata = st.get_metadata(rt.store(), owner_address).map_err(|e| {
             e.downcast_default(ExitCode::USR_ILLEGAL_ARGUMENT, "failed to get metadata")
         })?;
         Ok(metadata)

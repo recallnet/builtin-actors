@@ -97,7 +97,7 @@ impl Display for Kind {
 pub struct Metadata {
     /// Machine kind.
     pub kind: Kind,
-    /// Machine robust address.
+    /// Machine ID address.
     pub address: Address,
     /// User-defined data.
     pub metadata: HashMap<String, String>,
@@ -110,7 +110,7 @@ pub struct State {
     /// This is fixed at genesis.
     pub machine_codes: Cid,
     /// The permission mode controlling who can create machines.
-    /// The is fixed at genesis, but in allowlist mode, the set of deployers can be changed
+    /// This is fixed at genesis, but in allowlist mode, the set of deployers can be changed
     /// by any member.
     /// Modeled after the IPC EAM actor.
     pub permission_mode: PermissionMode,

@@ -42,7 +42,7 @@ pub mod machine {
 
     #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
     pub struct ConstructorParams {
-        /// The machine owner robust address.
+        /// The machine owner ID address.
         pub owner: Address,
         /// User-defined metadata.
         pub metadata: HashMap<String, String>,
@@ -50,7 +50,7 @@ pub mod machine {
 
     #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
     pub struct InitParams {
-        /// The machine reorg safe address.
-        pub robust_address: Address,
+        /// The machine ID address.
+        pub address: Address,
     }
 }
