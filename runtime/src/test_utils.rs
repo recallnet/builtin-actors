@@ -184,7 +184,6 @@ pub struct MockRuntime {
     pub gas_limit: u64,
     pub gas_premium: TokenAmount,
     pub actor_balances: HashMap<ActorID, TokenAmount>,
-    pub tipset_timestamp: u64,
     pub tipset_cids: Vec<Cid>,
 }
 
@@ -210,6 +209,7 @@ pub struct Expectations {
     pub expect_gas_charge: VecDeque<i64>,
     pub expect_gas_available: VecDeque<u64>,
     pub expect_emitted_events: VecDeque<ActorEvent>,
+    pub expect_tipset_timestamp: Option<u64>,
     skip_verification_on_drop: bool,
 }
 
@@ -324,6 +324,11 @@ impl Expectations {
             "expect_emitted_events {:?}, not received",
             this.expect_emitted_events
         );
+        assert!(
+            this.expect_tipset_timestamp.is_none(),
+            "expected tipset_timestamp {:?}, not received",
+            this.expect_tipset_timestamp
+        );
     }
 }
 
@@ -363,7 +368,6 @@ impl MockRuntime {
             gas_limit: 10_000_000_000u64,
             gas_premium: Default::default(),
             actor_balances: Default::default(),
-            tipset_timestamp: Default::default(),
             tipset_cids: Default::default(),
         }
     }
@@ -718,6 +722,11 @@ impl MockRuntime {
     pub fn expect_verify_post(&self, post: WindowPoStVerifyInfo, exit_code: ExitCode) {
         let a = ExpectVerifyPoSt { post, exit_code };
         self.expectations.borrow_mut().expect_verify_post = Some(a);
+    }
+
+    #[allow(dead_code)]
+    pub fn expect_tipset_timestamp(&self, timestamp: u64) {
+        self.expectations.borrow_mut().expect_tipset_timestamp = Some(timestamp);
     }
 
     #[allow(dead_code)]
@@ -1309,7 +1318,13 @@ impl Runtime for MockRuntime {
     }
 
     fn tipset_timestamp(&self) -> u64 {
-        self.tipset_timestamp
+        let ts = self
+            .expectations
+            .borrow_mut()
+            .expect_tipset_timestamp
+            .take()
+            .expect("Unexpected syscall to tipset_timestamp");
+        ts
     }
 
     fn tipset_cid(&self, epoch: i64) -> Result<Cid, ActorError> {
