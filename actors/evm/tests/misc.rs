@@ -25,7 +25,7 @@ return
     )
     .unwrap();
 
-    let mut rt = util::construct_and_verify(contract);
+    let rt = util::construct_and_verify(contract);
     rt.expect_tipset_timestamp(123);
     let result = util::invoke_contract(&rt, &[]);
     assert_eq!(U256::from_big_endian(&result), U256::from(123));
