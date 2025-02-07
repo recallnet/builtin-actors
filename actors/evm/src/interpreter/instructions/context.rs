@@ -287,7 +287,7 @@ mod tests {
     fn test_timestamp() {
         evm_unit_test! {
             (rt) {
-                rt.tipset_timestamp = 12345;
+                rt.expect_tipset_timestamp(12345);
             }
             (m) {
                 TIMESTAMP;
