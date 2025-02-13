@@ -21,6 +21,7 @@ use crate::{actor_error, ActorError, SendError};
 
 mod actor_code;
 pub mod builtins;
+#[allow(unexpected_cfgs)]
 pub mod policy;
 mod randomness;
 
