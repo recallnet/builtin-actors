@@ -9,15 +9,15 @@ use multihash::Code::Sha2_256;
 use multihash::MultihashDigest;
 use num_traits::Zero;
 
-use fil_actor_market::ext::miner::{
+use harness::*;
+use recall_fil_actor_market::ext::miner::{
     PieceChange, PieceReturn, SectorChanges, SectorContentChangedParams,
 };
-use fil_actor_market::{DealProposal, Method, NO_ALLOCATION_ID};
-use fil_actors_runtime::cbor::serialize;
-use fil_actors_runtime::runtime::builtins::Type;
-use fil_actors_runtime::test_utils::{expect_abort, MockRuntime, ACCOUNT_ACTOR_CODE_ID};
-use fil_actors_runtime::EPOCHS_IN_DAY;
-use harness::*;
+use recall_fil_actor_market::{DealProposal, Method, NO_ALLOCATION_ID};
+use recall_fil_actors_runtime::cbor::serialize;
+use recall_fil_actors_runtime::runtime::builtins::Type;
+use recall_fil_actors_runtime::test_utils::{expect_abort, MockRuntime, ACCOUNT_ACTOR_CODE_ID};
+use recall_fil_actors_runtime::EPOCHS_IN_DAY;
 
 mod harness;
 
@@ -421,7 +421,7 @@ fn require_miner_caller() {
 
     expect_abort(
         ExitCode::USR_FORBIDDEN,
-        rt.call::<fil_actor_market::Actor>(
+        rt.call::<recall_fil_actor_market::Actor>(
             Method::SectorContentChangedExported as u64,
             IpldBlock::serialize_cbor(&params).unwrap(),
         ),

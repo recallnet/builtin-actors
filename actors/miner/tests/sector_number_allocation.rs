@@ -1,10 +1,10 @@
 // Copyright 2019-2022 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-use fil_actors_runtime::runtime::Policy;
-use fil_actors_runtime::test_utils::*;
 use fvm_shared::clock::ChainEpoch;
 use fvm_shared::error::ExitCode;
+use recall_fil_actors_runtime::runtime::Policy;
+use recall_fil_actors_runtime::test_utils::*;
 
 mod util;
 use util::*;
@@ -15,7 +15,7 @@ use state_harness::*;
 const PERIOD_OFFSET: ChainEpoch = 0;
 
 mod sector_number_allocation {
-    use fil_actors_runtime::runtime::policy_constants::MAX_SECTOR_NUMBER;
+    use recall_fil_actors_runtime::runtime::policy_constants::MAX_SECTOR_NUMBER;
 
     use super::*;
 

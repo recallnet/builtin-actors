@@ -10,15 +10,15 @@ members = [
 ]
 
 [workspace.package]
-version = "15.0.0-rc1"
+version = "0.0.0"
 license = "MIT OR Apache-2.0"
 edition = "2021"
-repository = "https://github.com/filecoin-project/builtin-actors"
+repository = "https://github.com/recallnet/builtin-actors"
 
 [package]
-name = "fil_builtin_actors_bundle"
+name = "recall_fil_builtin_actors_bundle"
 description = "Bundle of FVM-compatible Wasm bytecode for Filecoin builtin actors"
-version.workspace = true
+version = "0.0.0"
 license.workspace = true
 edition.workspace = true
 repository.workspace = true
@@ -26,31 +26,28 @@ authors = ["Protocol Labs", "Filecoin Core Devs"]
 keywords = ["filecoin", "web3", "wasm"]
 exclude = ["examples", ".github"]
 
-# We don't publish the bundle to crates.io anymore. Instead, we build in CI.
-publish = false
-
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-fil_actor_account = { workspace = true, features = ["fil-actor"] }
-fil_actor_cron = { workspace = true, features = ["fil-actor"] }
-fil_actor_datacap = { workspace = true, features = ["fil-actor"] }
-fil_actor_ethaccount = { workspace = true, features = ["fil-actor"] }
-fil_actor_eam = { workspace = true, features = ["fil-actor"] }
-fil_actor_evm = { workspace = true, features = ["fil-actor"] }
-fil_actor_init = { workspace = true, features = ["fil-actor"] }
-fil_actor_market = { workspace = true, features = ["fil-actor"] }
-fil_actor_miner = { workspace = true, features = ["fil-actor"] }
-fil_actor_multisig = { workspace = true, features = ["fil-actor"] }
-fil_actor_paych = { workspace = true, features = ["fil-actor"] }
-fil_actor_placeholder = { workspace = true, features = ["fil-actor"] }
-fil_actor_power = { workspace = true, features = ["fil-actor"] }
-fil_actor_reward = { workspace = true, features = ["fil-actor"] }
-fil_actor_system = { workspace = true, features = ["fil-actor"] }
-fil_actor_verifreg = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_account = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_cron = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_datacap = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_ethaccount = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_eam = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_evm = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_init = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_market = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_miner = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_multisig = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_paych = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_placeholder = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_power = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_reward = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_system = { workspace = true, features = ["fil-actor"] }
+recall_fil_actor_verifreg = { workspace = true, features = ["fil-actor"] }
 
 [build-dependencies]
 fil_actor_bundler = "6.1.0"
 cid = { workspace = true }
-fil_actors_runtime = { workspace = true }
+recall_fil_actors_runtime = { workspace = true }
 num-traits = { workspace = true }
 
 [dependencies]
@@ -142,31 +139,31 @@ fvm_ipld_amt = { version = "0.6.2" }
 fvm_ipld_bitfield = "0.6.0"
 
 # workspace
-fil_actor_account = { path = "actors/account" }
-fil_actor_cron = { path = "actors/cron" }
-fil_actor_datacap = { path = "actors/datacap" }
-fil_actor_eam = { path = "actors/eam" }
-fil_actor_ethaccount = { path = "actors/ethaccount" }
-fil_actor_evm = { path = "actors/evm" }
-fil_actor_init = { path = "actors/init" }
-fil_actor_market = { path = "actors/market" }
-fil_actor_miner = { path = "actors/miner" }
-fil_actor_multisig = { path = "actors/multisig" }
-fil_actor_paych = { path = "actors/paych" }
-fil_actor_placeholder = { path = "actors/placeholder" }
-fil_actor_power = { path = "actors/power" }
-fil_actor_reward = { path = "actors/reward" }
-fil_actor_system = { path = "actors/system" }
-fil_actor_verifreg = { path = "actors/verifreg" }
-fil_actors_evm_shared = { path = "actors/evm/shared" }
-fil_actors_runtime = { path = "runtime" }
-fil_builtin_actors_state = { path = "state" }
-fil_actors_integration_tests = { version = "1.0.0", path = "integration_tests" }
-vm_api = { version = "1.0.0", path = "vm_api" }
-test_vm = { path = "test_vm" }
+recall_fil_actor_account = { version = "0.0.0", path = "actors/account" }
+recall_fil_actor_cron = { version = "0.0.0", path = "actors/cron" }
+recall_fil_actor_datacap = { version = "0.0.0", path = "actors/datacap" }
+recall_fil_actor_eam = { version = "0.0.0", path = "actors/eam" }
+recall_fil_actor_ethaccount = { version = "0.0.0", path = "actors/ethaccount" }
+recall_fil_actor_evm = { version = "0.0.0", path = "actors/evm" }
+recall_fil_actor_init = { version = "0.0.0", path = "actors/init" }
+recall_fil_actor_market = { version = "0.0.0", path = "actors/market" }
+recall_fil_actor_miner = { version = "0.0.0", path = "actors/miner" }
+recall_fil_actor_multisig = { version = "0.0.0", path = "actors/multisig" }
+recall_fil_actor_paych = { version = "0.0.0", path = "actors/paych" }
+recall_fil_actor_placeholder = { version = "0.0.0", path = "actors/placeholder" }
+recall_fil_actor_power = { version = "0.0.0", path = "actors/power" }
+recall_fil_actor_reward = { version = "0.0.0", path = "actors/reward" }
+recall_fil_actor_system = { version = "0.0.0", path = "actors/system" }
+recall_fil_actor_verifreg = { version = "0.0.0", path = "actors/verifreg" }
+recall_fil_actors_evm_shared = { version = "0.0.0", path = "actors/evm/shared" }
+recall_fil_actors_runtime = { version = "0.0.0", path = "runtime" }
+recall_fil_builtin_actors_state = { version = "0.0.0", path = "state" }
+recall_fil_actors_integration_tests = { version = "1.0.0", path = "integration_tests" }
+recall_vm_api = { version = "0.0.0", path = "vm_api" }
+test_vm = { version = "0.0.0", path = "test_vm" }
 
 # ADM workspace
-fil_actor_adm = { path = "actors/adm" }
+recall_fil_actor_adm = { version = "0.0.0", path = "actors/adm" }
 recall_sol_facade = { git = "https://github.com/recallnet/contracts", package = "recall_sol_facade", rev = "bbd1a89c45296e092e2aa20b62abea155b45d91c" }
 
 [patch.crates-io]
