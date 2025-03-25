@@ -1,12 +1,12 @@
 // Tests to match with Go github.com/filecoin-project/go-state-types/builtin/*/power
 mod serialization {
-    use fil_actor_power::CurrentTotalPowerReturn;
     use fvm_ipld_encoding::ipld_block::IpldBlock;
+    use recall_fil_actor_power::CurrentTotalPowerReturn;
 
-    use fil_actors_runtime::reward::FilterEstimate;
     use fvm_shared::bigint::BigInt;
     use fvm_shared::econ::TokenAmount;
     use fvm_shared::sector::StoragePower;
+    use recall_fil_actors_runtime::reward::FilterEstimate;
 
     #[test]
     fn current_total_power_return() {

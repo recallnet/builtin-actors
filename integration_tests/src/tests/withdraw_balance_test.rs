@@ -1,11 +1,13 @@
 use export_macro::vm_test;
-use fil_actor_miner::{ChangeBeneficiaryParams, Method as MinerMethod, WithdrawBalanceParams};
 use fvm_shared::bigint::Zero;
 use fvm_shared::econ::TokenAmount;
 use fvm_shared::error::ExitCode;
 use fvm_shared::sector::RegisteredSealProof;
-use vm_api::util::apply_code;
-use vm_api::VM;
+use recall_fil_actor_miner::{
+    ChangeBeneficiaryParams, Method as MinerMethod, WithdrawBalanceParams,
+};
+use recall_vm_api::util::apply_code;
+use recall_vm_api::VM;
 
 use crate::util::{change_beneficiary, create_accounts, create_miner, withdraw_balance};
 

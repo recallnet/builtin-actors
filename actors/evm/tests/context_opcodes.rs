@@ -48,7 +48,7 @@ fn test_prevrandao() {
     // simple test
     {
         rt.expect_get_randomness_from_beacon(
-            fil_actors_runtime::runtime::DomainSeparationTag::EvmPrevRandao,
+            recall_fil_actors_runtime::runtime::DomainSeparationTag::EvmPrevRandao,
             101,
             b"prevrandao".to_vec(),
             [0u8; 32],
@@ -66,7 +66,7 @@ fn test_prevrandao() {
     {
         let expected: [u8; 32] = rand.gen();
         rt.expect_get_randomness_from_beacon(
-            fil_actors_runtime::runtime::DomainSeparationTag::EvmPrevRandao,
+            recall_fil_actors_runtime::runtime::DomainSeparationTag::EvmPrevRandao,
             101,
             b"prevrandao".to_vec(),
             expected,
@@ -82,7 +82,7 @@ fn test_prevrandao() {
     {
         let expected: [u8; 32] = rand.gen();
         rt.expect_get_randomness_from_beacon(
-            fil_actors_runtime::runtime::DomainSeparationTag::EvmPrevRandao,
+            recall_fil_actors_runtime::runtime::DomainSeparationTag::EvmPrevRandao,
             101,
             b"prevrandao".to_vec(),
             expected,

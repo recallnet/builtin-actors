@@ -1,13 +1,13 @@
-use fil_actors_evm_shared::address::EthAddress;
-use fil_actors_runtime::ActorError;
 use fvm_shared::econ::TokenAmount;
+use recall_fil_actors_evm_shared::address::EthAddress;
+use recall_fil_actors_runtime::ActorError;
 
 use {
     super::instructions,
     super::memory::Memory,
     super::stack::Stack,
     super::{Bytecode, Output, System},
-    fil_actors_runtime::runtime::Runtime,
+    recall_fil_actors_runtime::runtime::Runtime,
 };
 
 /// EVM execution runtime.
@@ -92,8 +92,8 @@ macro_rules! def_ins_raw {
 pub mod opcodes {
     use super::instructions;
     use super::Machine;
-    use fil_actors_runtime::runtime::Runtime;
-    use fil_actors_runtime::ActorError;
+    use recall_fil_actors_runtime::runtime::Runtime;
+    use recall_fil_actors_runtime::ActorError;
 
     pub(crate) type Instruction<'r, 'a, RT> =
         unsafe fn(*mut Machine<'r, 'a, RT>) -> Result<(), ActorError>;
@@ -480,7 +480,7 @@ mod tests {
                     let epoch = 1234;
                     rt.set_epoch(epoch);
                     rt.expect_get_randomness_from_beacon(
-                        fil_actors_runtime::runtime::DomainSeparationTag::EvmPrevRandao,
+                        recall_fil_actors_runtime::runtime::DomainSeparationTag::EvmPrevRandao,
                         epoch,
                         Vec::from(*b"prevrandao"),
                         [0xff; 32]

@@ -1,8 +1,8 @@
 // Tests to match with Go github.com/filecoin-project/go-state-types/*/BatchReturn
 mod serialization {
-    use fil_actors_runtime::{BatchReturn, BatchReturnGen};
     use fvm_ipld_encoding::ipld_block::IpldBlock;
     use fvm_shared::error::ExitCode;
+    use recall_fil_actors_runtime::{BatchReturn, BatchReturnGen};
 
     #[test]
     fn batch_return() {

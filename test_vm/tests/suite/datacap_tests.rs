@@ -1,5 +1,5 @@
-use fil_actors_integration_tests::tests::{call_name_symbol_test, datacap_transfer_test};
-use fil_actors_runtime::test_blockstores::MemoryBlockstore;
+use recall_fil_actors_integration_tests::tests::{call_name_symbol_test, datacap_transfer_test};
+use recall_fil_actors_runtime::test_blockstores::MemoryBlockstore;
 use test_vm::TestVM;
 
 /* Mint a token for client and transfer it to a receiver, exercising error cases */

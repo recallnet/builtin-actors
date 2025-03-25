@@ -1,6 +1,6 @@
-use fil_actor_miner::VestSpec;
 use fvm_shared::bigint::Zero;
 use fvm_shared::econ::TokenAmount;
+use recall_fil_actor_miner::VestSpec;
 
 mod state_harness;
 use state_harness::*;

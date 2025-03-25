@@ -79,7 +79,7 @@ type ActorBytecode bytes
 ```
 
 Precompiled actor bundles are provided as [release binaries][releases] in this repo. The
-[`fil_builtin_actors_bundle`](https://crates.io/crates/fil_builtin_actors_bundle) crate on
+[`recall_fil_builtin_actors_bundle`](https://crates.io/crates/recall_fil_builtin_actors_bundle) crate on
 [crates.io](https://crates.io) will not be updated.
 
 ## [Releasing](RELEASE.md)

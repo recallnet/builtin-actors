@@ -1,7 +1,7 @@
 pub mod eam {
-    use fil_actors_evm_shared::address::EthAddress;
     use fvm_ipld_encoding::{strict_bytes, tuple::*};
     use fvm_shared::address::Address;
+    use recall_fil_actors_evm_shared::address::EthAddress;
 
     pub const CREATE_METHOD_NUM: u64 = 2;
     pub const CREATE2_METHOD_NUM: u64 = 3;

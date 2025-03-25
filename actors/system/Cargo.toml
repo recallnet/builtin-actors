@@ -1,5 +1,5 @@
 [package]
-name = "fil_actor_system"
+name = "recall_fil_actor_system"
 description = "Builtin system actor for Filecoin"
 version.workspace = true
 license.workspace = true
@@ -14,7 +14,7 @@ keywords = ["filecoin", "web3", "wasm"]
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-fil_actors_runtime = { workspace = true }
+recall_fil_actors_runtime = { workspace = true }
 fvm_shared = { workspace = true }
 fvm_ipld_encoding = { workspace = true }
 fvm_ipld_blockstore = { workspace = true }
@@ -25,7 +25,7 @@ serde = { workspace = true }
 cid = { workspace = true }
 
 [dev-dependencies]
-fil_actors_runtime = { workspace = true, features = ["test_utils", "sector-default"] }
+recall_fil_actors_runtime = { workspace = true, features = ["test_utils", "sector-default"] }
 
 [features]
-fil-actor = ["fil_actors_runtime/fil-actor"]
+fil-actor = ["recall_fil_actors_runtime/fil-actor"]
