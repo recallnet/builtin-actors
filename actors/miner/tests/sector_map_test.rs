@@ -54,6 +54,7 @@ fn create_deadline_sector_map(
     deadline_sector_map
 }
 
+#[allow(clippy::useless_vec)]
 fn create_bitfield_sequence(start: u64, end: u64) -> BitField {
     let ranges = vec![Range { start, end }];
     let ranges = Ranges::new(ranges.iter().cloned());

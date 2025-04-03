@@ -184,6 +184,7 @@ pub trait Primitives {
     /// Verifies a window proof of spacetime.
     fn verify_post(&self, verify_info: &WindowPoStVerifyInfo) -> Result<(), anyhow::Error>;
 
+    #[allow(clippy::doc_lazy_continuation)]
     /// Verifies that two block headers provide proof of a consensus fault:
     /// - both headers mined by the same actor
     /// - headers are different

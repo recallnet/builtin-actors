@@ -73,6 +73,7 @@ pub struct StateSummary {
 }
 
 /// Checks internal invariants of market state
+#[allow(clippy::unnecessary_get_then_check)]
 pub fn check_state_invariants<BS: Blockstore>(
     state: &State,
     store: &BS,

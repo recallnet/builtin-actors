@@ -15,11 +15,15 @@ use fil_actors_runtime::{
 use fvm_ipld_encoding::{ipld_block::IpldBlock, tuple::*, RawBytes};
 use fvm_shared::{address::Address, error::ExitCode, ActorID, METHOD_CONSTRUCTOR};
 use num_derive::FromPrimitive;
+use recall_sol_facade::machine::Calls;
 
+use crate::sol_facade as sol;
+use crate::sol_facade::{AbiCall, AbiCallRuntime, InputData};
 use crate::state::PermissionMode;
 pub use crate::state::{Kind, Metadata, PermissionModeParams, State};
 
 pub mod ext;
+mod sol_facade;
 mod state;
 
 #[cfg(feature = "fil-actor")]
@@ -33,6 +37,7 @@ pub enum Method {
     CreateExternal = 1214262202,
     UpdateDeployers = 1768606754,
     ListMetadata = 2283215593,
+    InvokeContract = 3844450837, //= frc42_dispatch::method_hash!("InvokeEVM")
 }
 
 #[derive(Debug, Serialize_tuple, Deserialize_tuple)]
@@ -206,6 +211,48 @@ impl AdmActor {
         })?;
         Ok(metadata)
     }
+
+    fn invoke_contract(
+        rt: &impl Runtime,
+        params: sol::InvokeContractParams,
+    ) -> Result<sol::InvokeContractReturn, ActorError> {
+        let input_data: InputData = params.try_into()?;
+        if sol::can_handle(&input_data) {
+            let output_data = match sol::parse_input(&input_data)? {
+                Calls::createBucket_0(call) => {
+                    // function createBucket() external;
+                    let params = call.params(rt);
+                    let create_external_return = Self::create_external(rt, params)?;
+                    call.returns(create_external_return)
+                }
+                Calls::createBucket_1(call) => {
+                    // function createBucket(address owner, KeyValue[] memory metadata) external;
+                    let params = call.params();
+                    let create_external_return = Self::create_external(rt, params)?;
+                    call.returns(create_external_return)
+                }
+                Calls::createBucket_2(call) => {
+                    // function createBucket(address owner) external;
+                    let params = call.params();
+                    let create_external_return = Self::create_external(rt, params)?;
+                    call.returns(create_external_return)
+                }
+                Calls::listBuckets_0(call) => {
+                    let params = call.params(rt);
+                    let list = Self::list_metadata(rt, params)?;
+                    call.returns(list)
+                }
+                Calls::listBuckets_1(call) => {
+                    let params = call.params();
+                    let list = Self::list_metadata(rt, params)?;
+                    call.returns(list)
+                }
+            };
+            Ok(sol::InvokeContractReturn { output_data })
+        } else {
+            Err(actor_error!(illegal_argument, "invalid call".to_string()))
+        }
+    }
 }
 
 impl ActorCode for AdmActor {
@@ -220,5 +267,6 @@ impl ActorCode for AdmActor {
         CreateExternal => create_external,
         UpdateDeployers => update_deployers,
         ListMetadata => list_metadata,
+        InvokeContract => invoke_contract,
     }
 }
