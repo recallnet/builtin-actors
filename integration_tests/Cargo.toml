@@ -57,7 +57,7 @@ regex = { workspace = true }
 serde = { workspace = true }
 thiserror = { workspace = true }
 libsecp256k1 = { workspace = true }
-export_macro = { version = "0.0.0", path = "./macro" }
+export_macro = { workspace = true }
 ctor = "0.2.5"
 
 [dev-dependencies]

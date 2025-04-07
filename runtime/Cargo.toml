@@ -1,7 +1,7 @@
 [package]
 name = "recall_fil_actors_runtime"
 description = "System actors for the Filecoin protocol"
-version = "0.0.0"
+version.workspace = true
 license.workspace = true
 edition.workspace = true
 repository.workspace = true

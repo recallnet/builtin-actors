@@ -30,7 +30,7 @@ hex-literal = { workspace = true }
 rlp = { workspace = true }
 
 [dev-dependencies]
-recall_fil_actor_evm = { workspace = true, path = "../evm" }
+recall_fil_actor_evm = { workspace = true }
 recall_fil_actors_runtime = { workspace = true, features = ["test_utils"] }
 
 [features]

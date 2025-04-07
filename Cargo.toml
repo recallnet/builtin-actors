@@ -9,12 +9,6 @@ members = [
     "integration_tests"
 ]
 
-[workspace.package]
-version = "0.0.0"
-license = "MIT OR Apache-2.0"
-edition = "2021"
-repository = "https://github.com/recallnet/builtin-actors"
-
 [package]
 name = "recall_fil_builtin_actors_bundle"
 description = "Bundle of FVM-compatible Wasm bytecode for Filecoin builtin actors"
@@ -69,7 +63,44 @@ devnet = []
 testing = []
 testing-fake-proofs = []
 
+[workspace.package]
+version = "0.0.1"
+license = "MIT OR Apache-2.0"
+edition = "2021"
+repository = "https://github.com/recallnet/builtin-actors"
+
 [workspace.dependencies]
+# published packages, NOTE: we must keep these version in sync with `workspace.package.version` above
+recall_fil_actor_adm = { path = "actors/adm", version = "0.0.1" }
+recall_fil_actor_eam = { path = "actors/eam", version = "0.0.1" }
+recall_fil_actor_evm = { path = "actors/evm", version = "0.0.1" }
+recall_fil_actors_evm_shared = { path = "actors/evm/shared", version = "0.0.1" }
+recall_fil_actors_runtime = { path = "runtime", version = "0.0.1" }
+recall_vm_api = { path = "vm_api", version = "0.0.1" }
+
+# unpublished packages loccated in this repo
+export_macro = { path = "integration_tests/macro" }
+recall_fil_actor_account = { path = "actors/account" }
+recall_fil_actor_cron = { path = "actors/cron" }
+recall_fil_actor_datacap = { path = "actors/datacap" }
+recall_fil_actor_ethaccount = { path = "actors/ethaccount" }
+recall_fil_actor_init = { path = "actors/init" }
+recall_fil_actor_market = { path = "actors/market" }
+recall_fil_actor_miner = { path = "actors/miner" }
+recall_fil_actor_multisig = { path = "actors/multisig" }
+recall_fil_actor_paych = { path = "actors/paych" }
+recall_fil_actor_placeholder = { path = "actors/placeholder" }
+recall_fil_actor_power = { path = "actors/power" }
+recall_fil_actor_reward = { path = "actors/reward" }
+recall_fil_actor_system = { path = "actors/system" }
+recall_fil_actor_verifreg = { path = "actors/verifreg" }
+recall_fil_actors_integration_tests = { path = "integration_tests" }
+recall_fil_builtin_actors_state = { path = "state" }
+test_vm = { path = "test_vm" }
+
+# package we publish from `contracts` repo
+recall_sol_facade = "0.1.1"
+
 # Common
 serde = { version = "1.0.136", features = ["derive"] }
 anyhow = "1.0.65"
@@ -129,42 +160,14 @@ frc42_dispatch = "7.0.0"
 frc46_token = "11.0.0"
 
 # FVM
-fvm_sdk = "4.3.0"
-fvm_shared = "4.3.0"
-fvm_ipld_encoding = "0.4.0"
-fvm_ipld_blockstore = "0.2.0"
-fvm_ipld_hamt = "0.9.0"
-fvm_ipld_kamt = "0.3.0"
-fvm_ipld_amt = { version = "0.6.2" }
-fvm_ipld_bitfield = "0.6.0"
-
-# workspace
-recall_fil_actor_account = { version = "0.0.0", path = "actors/account" }
-recall_fil_actor_cron = { version = "0.0.0", path = "actors/cron" }
-recall_fil_actor_datacap = { version = "0.0.0", path = "actors/datacap" }
-recall_fil_actor_eam = { version = "0.0.0", path = "actors/eam" }
-recall_fil_actor_ethaccount = { version = "0.0.0", path = "actors/ethaccount" }
-recall_fil_actor_evm = { version = "0.0.0", path = "actors/evm" }
-recall_fil_actor_init = { version = "0.0.0", path = "actors/init" }
-recall_fil_actor_market = { version = "0.0.0", path = "actors/market" }
-recall_fil_actor_miner = { version = "0.0.0", path = "actors/miner" }
-recall_fil_actor_multisig = { version = "0.0.0", path = "actors/multisig" }
-recall_fil_actor_paych = { version = "0.0.0", path = "actors/paych" }
-recall_fil_actor_placeholder = { version = "0.0.0", path = "actors/placeholder" }
-recall_fil_actor_power = { version = "0.0.0", path = "actors/power" }
-recall_fil_actor_reward = { version = "0.0.0", path = "actors/reward" }
-recall_fil_actor_system = { version = "0.0.0", path = "actors/system" }
-recall_fil_actor_verifreg = { version = "0.0.0", path = "actors/verifreg" }
-recall_fil_actors_evm_shared = { version = "0.0.0", path = "actors/evm/shared" }
-recall_fil_actors_runtime = { version = "0.0.0", path = "runtime" }
-recall_fil_builtin_actors_state = { version = "0.0.0", path = "state" }
-recall_fil_actors_integration_tests = { version = "1.0.0", path = "integration_tests" }
-recall_vm_api = { version = "0.0.0", path = "vm_api" }
-test_vm = { version = "0.0.0", path = "test_vm" }
-
-# ADM workspace
-recall_fil_actor_adm = { version = "0.0.0", path = "actors/adm" }
-recall_sol_facade = { git = "https://github.com/recallnet/contracts", package = "recall_sol_facade", rev = "bbd1a89c45296e092e2aa20b62abea155b45d91c" }
+fvm_sdk = "~4.3.0"
+fvm_shared = "~4.3.0"
+fvm_ipld_encoding = "~0.4.0"
+fvm_ipld_blockstore = "~0.2.0"
+fvm_ipld_hamt = "~0.9.0"
+fvm_ipld_kamt = "~0.3.0"
+fvm_ipld_amt = "~0.6.2"
+fvm_ipld_bitfield = "~0.6.0"
 
 [patch.crates-io]
 #fvm_shared = { git = "https://github.com/filecoin-project/ref-fvm", branch = "master" }

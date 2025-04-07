@@ -1,0 +1,6 @@
+	cargo publish --locked --package recall_vm_api
+	cargo publish --locked --package recall_fil_actors_runtime
+	cargo publish --locked --package recall_fil_actors_evm_shared
+	cargo publish --locked --package recall_fil_actor_evm
+	cargo publish --locked --package recall_fil_actor_eam
+	cargo publish --locked --package recall_fil_actor_adm

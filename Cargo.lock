@@ -1673,7 +1673,7 @@ dependencies = [
 
 [[package]]
 name = "export_macro"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3562,7 +3562,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_account"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "frc42_dispatch",
@@ -3578,7 +3578,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_adm"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "cid 0.10.1",
@@ -3598,7 +3598,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_cron"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding",
@@ -3612,7 +3612,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_datacap"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "cid 0.10.1",
  "frc42_dispatch",
@@ -3632,7 +3632,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_eam"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "cid 0.10.1",
@@ -3653,7 +3653,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_ethaccount"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "frc42_dispatch",
  "fvm_actor_utils",
@@ -3668,7 +3668,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_evm"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "cid 0.10.1",
@@ -3697,7 +3697,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_init"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "cid 0.10.1",
@@ -3715,7 +3715,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_market"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "cid 0.10.1",
@@ -3745,7 +3745,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_miner"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "bitflags 2.9.0",
@@ -3777,7 +3777,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_multisig"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "cid 0.10.1",
@@ -3798,7 +3798,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_paych"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "cid 0.10.1",
@@ -3817,11 +3817,11 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_placeholder"
-version = "0.0.0"
+version = "0.0.1"
 
 [[package]]
 name = "recall_fil_actor_power"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "cid 0.10.1",
@@ -3844,7 +3844,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_reward"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "fvm_ipld_blockstore",
  "fvm_ipld_encoding",
@@ -3860,7 +3860,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_system"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "cid 0.10.1",
@@ -3875,7 +3875,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actor_verifreg"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "cid 0.10.1",
@@ -3897,7 +3897,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actors_evm_shared"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "fvm_ipld_encoding",
  "fvm_shared",
@@ -3965,7 +3965,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_actors_runtime"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "base64 0.21.7",
@@ -4033,7 +4033,7 @@ dependencies = [
 
 [[package]]
 name = "recall_fil_builtin_actors_state"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "bimap",
@@ -4064,7 +4064,8 @@ dependencies = [
 [[package]]
 name = "recall_sol_facade"
 version = "0.1.1"
-source = "git+https://github.com/recallnet/contracts?rev=bbd1a89c45296e092e2aa20b62abea155b45d91c#bbd1a89c45296e092e2aa20b62abea155b45d91c"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8fee68f707c2b1aaac02696a67efcd87a8c0c1242833d7e3987be766dc7624a7"
 dependencies = [
  "alloy-primitives",
  "alloy-sol-macro-expander",
@@ -4088,7 +4089,7 @@ dependencies = [
 
 [[package]]
 name = "recall_vm_api"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "cid 0.10.1",
@@ -4907,7 +4908,7 @@ dependencies = [
 
 [[package]]
 name = "test_vm"
-version = "0.0.0"
+version = "0.0.1"
 dependencies = [
  "anyhow",
  "blake2b_simd",
