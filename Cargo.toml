@@ -64,19 +64,19 @@ testing = []
 testing-fake-proofs = []
 
 [workspace.package]
-version = "0.0.1"
+version = "0.0.2"
 license = "MIT OR Apache-2.0"
 edition = "2021"
 repository = "https://github.com/recallnet/builtin-actors"
 
 [workspace.dependencies]
 # published packages, NOTE: we must keep these version in sync with `workspace.package.version` above
-recall_fil_actor_adm = { path = "actors/adm", version = "0.0.1" }
-recall_fil_actor_eam = { path = "actors/eam", version = "0.0.1" }
-recall_fil_actor_evm = { path = "actors/evm", version = "0.0.1" }
-recall_fil_actors_evm_shared = { path = "actors/evm/shared", version = "0.0.1" }
-recall_fil_actors_runtime = { path = "runtime", version = "0.0.1" }
-recall_vm_api = { path = "vm_api", version = "0.0.1" }
+recall_fil_actor_adm = { path = "actors/adm", version = "0.0.2" }
+recall_fil_actor_eam = { path = "actors/eam", version = "0.0.2" }
+recall_fil_actor_evm = { path = "actors/evm", version = "0.0.2" }
+recall_fil_actors_evm_shared = { path = "actors/evm/shared", version = "0.0.2" }
+recall_fil_actors_runtime = { path = "runtime", version = "0.0.2" }
+recall_vm_api = { path = "vm_api", version = "0.0.2" }
 
 # unpublished packages loccated in this repo
 export_macro = { path = "integration_tests/macro" }
