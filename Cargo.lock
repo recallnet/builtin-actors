@@ -4065,7 +4065,7 @@ dependencies = [
 [[package]]
 name = "recall_sol_facade"
 version = "0.1.1"
-source = "git+https://github.com/recallnet/contracts?rev=bbd1a89c45296e092e2aa20b62abea155b45d91c#bbd1a89c45296e092e2aa20b62abea155b45d91c"
+source = "git+https://github.com/recallnet/contracts?rev=df25fa1b82264157cbf4968a4ae2e1f418d77e39#df25fa1b82264157cbf4968a4ae2e1f418d77e39"
 dependencies = [
  "alloy-primitives",
  "alloy-sol-macro-expander",

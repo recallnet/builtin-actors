@@ -167,7 +167,7 @@ test_vm = { path = "test_vm" }
 
 # ADM workspace
 fil_actor_adm = { path = "actors/adm" }
-recall_sol_facade = { git = "https://github.com/recallnet/contracts", package = "recall_sol_facade", rev = "bbd1a89c45296e092e2aa20b62abea155b45d91c" }
+recall_sol_facade = { git = "https://github.com/recallnet/contracts", package = "recall_sol_facade", rev = "df25fa1b82264157cbf4968a4ae2e1f418d77e39" }
 
 [patch.crates-io]
 #fvm_shared = { git = "https://github.com/filecoin-project/ref-fvm", branch = "master" }
