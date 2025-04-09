@@ -13,6 +13,7 @@ use fvm_shared::MethodNum;
 use super::Merge;
 
 /// Maximum number of lanes in a channel
+#[allow(clippy::legacy_numeric_constants)]
 pub const MAX_LANE: u64 = std::i64::MAX as u64;
 
 pub const SETTLE_DELAY: ChainEpoch = EPOCHS_IN_HOUR * 12;

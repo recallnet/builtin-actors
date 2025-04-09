@@ -290,6 +290,7 @@ fn fail_when_provider_has_some_funds_but_not_enough_for_a_deal() {
 }
 
 #[test]
+#[allow(clippy::legacy_numeric_constants)]
 fn fail_when_deals_have_different_providers() {
     let start_epoch = 10;
     let end_epoch = start_epoch + 200 * EPOCHS_IN_DAY;

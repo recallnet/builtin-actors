@@ -16,7 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checking out
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
     - name: Running rustfmt
       run: make rustfmt
 
@@ -24,7 +26,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checking out
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
     - name: Running clippy
       run: make check
 
@@ -32,7 +36,9 @@ jobs:
     runs-on: ${{ fromJSON(github.repository == 'filecoin-project/builtin-actors' && '["self-hosted", "linux", "x64", "4xlarge"]' || '"ubuntu-latest"') }}
     steps:
     - name: Checking out
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
     - if: env.RUNNER_ENVIRONMENT != 'github-hosted'
       uses: dtolnay/rust-toolchain@stable
     - name: Running tests
@@ -46,7 +52,9 @@ jobs:
         network: [ 'mainnet', 'caterpillarnet', 'butterflynet', 'calibrationnet', 'devnet', 'testing', 'testing-fake-proofs' ]
     steps:
     - name: Checking out
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
     - name: Writing bundle
       env:
         BUILD_FIL_NETWORK: ${{ matrix.network }}

@@ -82,6 +82,7 @@ mod sector_number_allocation {
     }
 
     #[test]
+    #[allow(clippy::legacy_numeric_constants)]
     fn compaction_with_mask() {
         let policy = Policy::default();
         let mut h = StateHarness::new_with_policy(&policy, PERIOD_OFFSET);

@@ -700,6 +700,7 @@ pub fn cron_tick_no_change(rt: &MockRuntime, client_addr: Address, provider_addr
     assert_eq!(provider_acct, new_provider_acct);
 }
 
+#[allow(clippy::unnecessary_get_then_check)]
 pub fn publish_deals(
     rt: &MockRuntime,
     addrs: &MinerAddresses,

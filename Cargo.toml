@@ -6,7 +6,7 @@ members = [
     "runtime",
     "test_vm",
     "vm_api",
-    "integration_tests",
+    "integration_tests"
 ]
 
 [workspace.package]
@@ -167,6 +167,7 @@ test_vm = { path = "test_vm" }
 
 # ADM workspace
 fil_actor_adm = { path = "actors/adm" }
+recall_sol_facade = { git = "https://github.com/recallnet/contracts", package = "recall_sol_facade" }
 
 [patch.crates-io]
 #fvm_shared = { git = "https://github.com/filecoin-project/ref-fvm", branch = "master" }

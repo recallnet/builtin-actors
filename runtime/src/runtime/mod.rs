@@ -224,6 +224,7 @@ pub trait Runtime: Primitives + RuntimePolicy {
     /// if the supplied type is invalid.
     fn get_code_cid_for_type(&self, typ: Type) -> Cid;
 
+    #[allow(clippy::doc_lazy_continuation)]
     /// Returns the total token supply in circulation at the beginning of the current epoch.
     /// The circulating supply is the sum of:
     /// - rewards emitted by the reward actor,

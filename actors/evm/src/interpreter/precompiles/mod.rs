@@ -112,6 +112,7 @@ impl<RT: Runtime> Precompiles<RT> {
 }
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub enum PrecompileError {
     // EVM precompile errors
     EcErr(CurveError),

@@ -89,7 +89,7 @@ pub fn extcodecopy(
 }
 
 #[derive(Debug)]
-#[allow(clippy::upper_case_acronyms)]
+#[allow(clippy::upper_case_acronyms, dead_code)]
 pub enum ContractType {
     Precompile,
     /// EVM ID Address and the CID of the actor (not the bytecode)

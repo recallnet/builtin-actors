@@ -564,6 +564,7 @@ where
     }
 }
 
+#[allow(clippy::doc_lazy_continuation)]
 /// A convenience function that built-in actors can delegate their execution to.
 ///
 /// The trampoline takes care of boilerplate:
