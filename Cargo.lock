@@ -4063,9 +4063,9 @@ dependencies = [
 
 [[package]]
 name = "recall_sol_facade"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8fee68f707c2b1aaac02696a67efcd87a8c0c1242833d7e3987be766dc7624a7"
+checksum = "fa96b3cb9342fd29ffb2acd61994dd06e42eebfbefbea96d99b49cb451a2121f"
 dependencies = [
  "alloy-primitives",
  "alloy-sol-macro-expander",

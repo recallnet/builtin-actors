@@ -99,7 +99,7 @@ recall_fil_builtin_actors_state = { path = "state" }
 test_vm = { path = "test_vm" }
 
 # package we publish from `contracts` repo
-recall_sol_facade = "0.1.1"
+recall_sol_facade = "0.1.2"
 
 # Common
 serde = { version = "1.0.136", features = ["derive"] }
