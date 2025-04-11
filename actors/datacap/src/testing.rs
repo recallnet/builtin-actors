@@ -2,7 +2,7 @@ use frc46_token::token::state::StateSummary;
 use fvm_ipld_blockstore::Blockstore;
 use fvm_shared::address::Protocol;
 
-use fil_actors_runtime::MessageAccumulator;
+use recall_fil_actors_runtime::MessageAccumulator;
 
 use crate::{State, DATACAP_GRANULARITY};
 

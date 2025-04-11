@@ -1,8 +1,8 @@
-use fil_actors_integration_tests::tests::{
+use recall_fil_actors_integration_tests::tests::{
     commit_sector_with_max_duration_deal_test, extend_legacy_sector_with_deals_test,
     extend_sector_up_to_max_relative_extension_test, extend_updated_sector_with_claims_test,
 };
-use fil_actors_runtime::test_blockstores::MemoryBlockstore;
+use recall_fil_actors_runtime::test_blockstores::MemoryBlockstore;
 use test_vm::TestVM;
 
 #[test]

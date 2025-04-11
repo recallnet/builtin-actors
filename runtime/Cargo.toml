@@ -1,5 +1,5 @@
 [package]
-name = "fil_actors_runtime"
+name = "recall_fil_actors_runtime"
 description = "System actors for the Filecoin protocol"
 version.workspace = true
 license.workspace = true
@@ -33,7 +33,7 @@ serde = { workspace = true }
 serde_repr = { workspace = true }
 thiserror = { workspace = true }
 unsigned-varint = { workspace = true }
-vm_api = { workspace = true }
+recall_vm_api = { workspace = true }
 
 # A fake-proofs dependency but... we can't select on that feature here because we enable it from
 # build.rs.
@@ -57,7 +57,8 @@ hex = { workspace = true }
 rand = { workspace = true }
 const-hex = { workspace = true }
 # Enable the test_utils feature when testing.
-fil_actors_runtime = { workspace = true, features = ["test_utils"] }
+# TODO: I commented this out.  How can a packaege be it's own dependency?
+#recall_fil_actors_runtime = { workspace = true, features = ["test_utils"] }
 
 [features]
 default = []

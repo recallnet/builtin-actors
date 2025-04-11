@@ -1,6 +1,6 @@
-use fil_actors_runtime::test_utils::{expect_abort, MockRuntime};
 use fvm_shared::address::Address;
 use fvm_shared::{clock::ChainEpoch, error::ExitCode};
+use recall_fil_actors_runtime::test_utils::{expect_abort, MockRuntime};
 
 mod util;
 use util::*;
@@ -17,7 +17,7 @@ fn setup() -> (ActorHarness, MockRuntime) {
 }
 
 mod compact_sector_numbers_test {
-    use fil_actors_runtime::runtime::policy_constants::MAX_SECTOR_NUMBER;
+    use recall_fil_actors_runtime::runtime::policy_constants::MAX_SECTOR_NUMBER;
 
     use super::*;
 

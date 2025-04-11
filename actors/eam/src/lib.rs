@@ -1,14 +1,14 @@
 use std::iter;
 
-use fil_actors_evm_shared::address::EthAddress;
 use num_traits::Zero;
+use recall_fil_actors_evm_shared::address::EthAddress;
 
 use ext::{
     account::PUBKEY_ADDRESS_METHOD,
     evm::RESURRECT_METHOD,
     init::{Exec4Params, Exec4Return},
 };
-use fil_actors_runtime::{
+use recall_fil_actors_runtime::{
     actor_dispatch_unrestricted, actor_error, deserialize_block, extract_send_result, ActorError,
     AsActorError, EAM_ACTOR_ID, INIT_ACTOR_ADDR, SYSTEM_ACTOR_ADDR,
 };
@@ -19,8 +19,8 @@ use serde::{Deserialize, Serialize};
 
 pub mod ext;
 
-use fil_actors_runtime::runtime::builtins::Type;
-use fil_actors_runtime::runtime::{ActorCode, Runtime};
+use recall_fil_actors_runtime::runtime::builtins::Type;
+use recall_fil_actors_runtime::runtime::{ActorCode, Runtime};
 
 use fvm_ipld_encoding::{strict_bytes, tuple::*, RawBytes};
 use fvm_shared::address::{Address, Payload};
@@ -28,7 +28,7 @@ use fvm_shared::crypto::hash::SupportedHashes;
 use num_derive::FromPrimitive;
 
 #[cfg(feature = "fil-actor")]
-fil_actors_runtime::wasm_trampoline!(EamActor);
+recall_fil_actors_runtime::wasm_trampoline!(EamActor);
 
 #[derive(FromPrimitive)]
 #[repr(u64)]
@@ -305,8 +305,8 @@ impl ActorCode for EamActor {
 
 #[cfg(test)]
 mod test {
-    use fil_actors_runtime::test_utils::MockRuntime;
     use fvm_shared::error::ExitCode;
+    use recall_fil_actors_runtime::test_utils::MockRuntime;
 
     use crate::compute_address_create2;
 

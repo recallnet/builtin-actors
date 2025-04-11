@@ -1,6 +1,6 @@
 use fil_actor_bundler::Bundler;
-use fil_actors_runtime::runtime::builtins::Type;
 use num_traits::cast::FromPrimitive;
+use recall_fil_actors_runtime::runtime::builtins::Type;
 use std::error::Error;
 use std::io::{BufRead, BufReader};
 use std::path::Path;
@@ -83,8 +83,10 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("cargo:warning=out_dir: {:?}", &out_dir);
 
     // Compute the package names.
-    let packages =
-        ACTORS.iter().map(|(pkg, _)| String::from("fil_actor_") + pkg).collect::<Vec<String>>();
+    let packages = ACTORS
+        .iter()
+        .map(|(pkg, _)| String::from("recall_fil_actor_") + pkg)
+        .collect::<Vec<String>>();
 
     let manifest_path =
         Path::new(&std::env::var_os("CARGO_MANIFEST_DIR").expect("CARGO_MANIFEST_DIR unset"))
@@ -167,7 +169,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         );
         let bytecode_path = Path::new(&out_dir)
             .join("wasm32-unknown-unknown/wasm")
-            .join(format!("fil_actor_{}.wasm", pkg));
+            .join(format!("recall_fil_actor_{}.wasm", pkg));
 
         // This actor version doesn't force synthetic CIDs; it uses genuine
         // content-addressed CIDs.

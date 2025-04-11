@@ -1,8 +1,8 @@
 use std::collections::BTreeMap;
 
-use fil_actor_miner::TerminationResult;
 use fvm_ipld_bitfield::BitField;
 use fvm_shared::clock::ChainEpoch;
+use recall_fil_actor_miner::TerminationResult;
 
 #[test]
 fn test_termination_result() {

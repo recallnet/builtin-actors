@@ -4,8 +4,8 @@
 use crate::NO_QUANTIZATION;
 
 use super::*;
-use fil_actors_runtime::DealWeight;
 use fvm_shared::sector::StoragePower;
+use recall_fil_actors_runtime::DealWeight;
 
 #[test]
 fn test_expirations() {

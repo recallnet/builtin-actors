@@ -5,11 +5,6 @@ use ethers::{
 };
 
 use export_macro::vm_test;
-use fil_actors_evm_shared::uints::U256;
-use fil_actors_runtime::{
-    test_utils::ETHACCOUNT_ACTOR_CODE_ID, test_utils::EVM_ACTOR_CODE_ID, EAM_ACTOR_ADDR,
-    EAM_ACTOR_ID,
-};
 use fvm_ipld_encoding::ipld_block::IpldBlock;
 use fvm_ipld_encoding::RawBytes;
 use fvm_ipld_encoding::{strict_bytes, BytesDe};
@@ -17,10 +12,15 @@ use fvm_shared::ActorID;
 use fvm_shared::METHOD_SEND;
 use fvm_shared::{address::Address, econ::TokenAmount};
 use num_traits::Zero;
+use recall_fil_actors_evm_shared::uints::U256;
+use recall_fil_actors_runtime::{
+    test_utils::ETHACCOUNT_ACTOR_CODE_ID, test_utils::EVM_ACTOR_CODE_ID, EAM_ACTOR_ADDR,
+    EAM_ACTOR_ID,
+};
+use recall_vm_api::util::{apply_ok, serialize_ok};
+use recall_vm_api::VM;
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
-use vm_api::util::{apply_ok, serialize_ok};
-use vm_api::VM;
 
 use crate::util::create_accounts;
 use crate::TEST_FAUCET_ADDR;
@@ -62,13 +62,14 @@ pub fn evm_eth_create_external_test(v: &dyn VM) {
     v.set_actor(&account, actor);
 
     // now create an empty contract
-    let params = IpldBlock::serialize_cbor(&fil_actor_eam::CreateExternalParams(vec![])).unwrap();
+    let params =
+        IpldBlock::serialize_cbor(&recall_fil_actor_eam::CreateExternalParams(vec![])).unwrap();
     let create_result = v
         .execute_message(
             &account,
             &EAM_ACTOR_ADDR,
             &TokenAmount::zero(),
-            fil_actor_eam::Method::CreateExternal as u64,
+            recall_fil_actor_eam::Method::CreateExternal as u64,
             params,
         )
         .unwrap();
@@ -80,7 +81,7 @@ pub fn evm_eth_create_external_test(v: &dyn VM) {
     );
 
     // and call it
-    let create_return: fil_actor_eam::CreateExternalReturn =
+    let create_return: recall_fil_actor_eam::CreateExternalReturn =
         create_result.ret.unwrap().deserialize().expect("failed to decode results");
 
     let robust_addr = create_return.robust_address.unwrap();
@@ -91,7 +92,7 @@ pub fn evm_eth_create_external_test(v: &dyn VM) {
             &account,
             &robust_addr,
             &TokenAmount::zero(),
-            fil_actor_evm::Method::InvokeContract as u64,
+            recall_fil_actor_evm::Method::InvokeContract as u64,
             params,
         )
         .unwrap();
@@ -113,8 +114,8 @@ pub fn evm_call_test(v: &dyn VM) {
             &account,
             &EAM_ACTOR_ADDR,
             &TokenAmount::zero(),
-            fil_actor_eam::Method::CreateExternal as u64,
-            Some(serialize_ok(&fil_actor_eam::CreateExternalParams(bytecode))),
+            recall_fil_actor_eam::Method::CreateExternal as u64,
+            Some(serialize_ok(&recall_fil_actor_eam::CreateExternalParams(bytecode))),
         )
         .unwrap();
 
@@ -124,7 +125,7 @@ pub fn evm_call_test(v: &dyn VM) {
         create_result.message
     );
 
-    let create_return: fil_actor_eam::CreateExternalReturn =
+    let create_return: recall_fil_actor_eam::CreateExternalReturn =
         create_result.ret.unwrap().deserialize().expect("failed to decode results");
 
     let contract_params = contract.enter().calldata().expect("should serialize");
@@ -133,7 +134,7 @@ pub fn evm_call_test(v: &dyn VM) {
             &account,
             &create_return.robust_address.unwrap(),
             &TokenAmount::zero(),
-            fil_actor_evm::Method::InvokeContract as u64,
+            recall_fil_actor_evm::Method::InvokeContract as u64,
             Some(serialize_ok(&ContractParams(contract_params.to_vec()))),
         )
         .unwrap();
@@ -165,8 +166,8 @@ pub fn evm_create_test(v: &dyn VM) {
             &account,
             &EAM_ACTOR_ADDR,
             &TokenAmount::zero(),
-            fil_actor_eam::Method::CreateExternal as u64,
-            Some(serialize_ok(&fil_actor_eam::CreateExternalParams(bytecode))),
+            recall_fil_actor_eam::Method::CreateExternal as u64,
+            Some(serialize_ok(&recall_fil_actor_eam::CreateExternalParams(bytecode))),
         )
         .unwrap();
 
@@ -176,7 +177,7 @@ pub fn evm_create_test(v: &dyn VM) {
         create_result.message
     );
 
-    let create_return: fil_actor_eam::CreateExternalReturn =
+    let create_return: recall_fil_actor_eam::CreateExternalReturn =
         create_result.ret.unwrap().deserialize().expect("failed to decode results");
 
     let test_func = |create_func: ContractCall<_, EthAddress>, recursive: bool| {
@@ -187,7 +188,7 @@ pub fn evm_create_test(v: &dyn VM) {
                     &account,
                     &create_return.robust_address.unwrap(),
                     &TokenAmount::zero(),
-                    fil_actor_evm::Method::InvokeContract as u64,
+                    recall_fil_actor_evm::Method::InvokeContract as u64,
                     Some(serialize_ok(&ContractParams(call_params.to_vec()))),
                 )
                 .unwrap();
@@ -214,7 +215,7 @@ pub fn evm_create_test(v: &dyn VM) {
                     &account,
                     &child_addr,
                     &TokenAmount::zero(),
-                    fil_actor_evm::Method::InvokeContract as u64,
+                    recall_fil_actor_evm::Method::InvokeContract as u64,
                     Some(serialize_ok(&ContractParams(call_params.to_vec()))),
                 )
                 .unwrap();
@@ -240,7 +241,7 @@ pub fn evm_create_test(v: &dyn VM) {
                     &account,
                     &child_addr,
                     &TokenAmount::zero(),
-                    fil_actor_evm::Method::InvokeContract as u64,
+                    recall_fil_actor_evm::Method::InvokeContract as u64,
                     Some(serialize_ok(&ContractParams(call_params.to_vec()))),
                 )
                 .unwrap();
@@ -260,7 +261,7 @@ pub fn evm_create_test(v: &dyn VM) {
                     &account,
                     &child_addr,
                     &TokenAmount::zero(),
-                    fil_actor_evm::Method::InvokeContract as u64,
+                    recall_fil_actor_evm::Method::InvokeContract as u64,
                     Some(serialize_ok(&ContractParams(call_params.to_vec()))),
                 )
                 .unwrap();
@@ -301,7 +302,7 @@ pub fn evm_create_test(v: &dyn VM) {
                 &account,
                 &create_return.robust_address.unwrap(),
                 &TokenAmount::zero(),
-                fil_actor_evm::Method::InvokeContract as u64,
+                recall_fil_actor_evm::Method::InvokeContract as u64,
                 Some(serialize_ok(&ContractParams(call_params.to_vec()))),
             )
             .unwrap();
@@ -327,8 +328,8 @@ pub fn evm_empty_initcode_test(v: &dyn VM) {
             &account,
             &EAM_ACTOR_ADDR,
             &TokenAmount::zero(),
-            fil_actor_eam::Method::CreateExternal as u64,
-            Some(serialize_ok(&fil_actor_eam::CreateExternalParams(vec![]))),
+            recall_fil_actor_eam::Method::CreateExternal as u64,
+            Some(serialize_ok(&recall_fil_actor_eam::CreateExternalParams(vec![]))),
         )
         .unwrap();
 
@@ -362,8 +363,10 @@ pub fn evm_staticcall_test(v: &dyn VM) {
                     account,
                     &EAM_ACTOR_ADDR,
                     &TokenAmount::zero(),
-                    fil_actor_eam::Method::CreateExternal as u64,
-                    Some(serialize_ok(&fil_actor_eam::CreateExternalParams(bytecode.clone()))),
+                    recall_fil_actor_eam::Method::CreateExternal as u64,
+                    Some(serialize_ok(&recall_fil_actor_eam::CreateExternalParams(
+                        bytecode.clone(),
+                    ))),
                 )
                 .unwrap();
 
@@ -373,7 +376,7 @@ pub fn evm_staticcall_test(v: &dyn VM) {
                 create_result.message
             );
 
-            let create_return: fil_actor_eam::CreateExternalReturn =
+            let create_return: recall_fil_actor_eam::CreateExternalReturn =
                 create_result.ret.unwrap().deserialize().expect("failed to decode results");
 
             // Make sure we deployed an EVM actor.
@@ -400,7 +403,7 @@ pub fn evm_staticcall_test(v: &dyn VM) {
                 &A_act,
                 &A_robust_addr,
                 &TokenAmount::zero(),
-                fil_actor_evm::Method::InvokeContract as u64,
+                recall_fil_actor_evm::Method::InvokeContract as u64,
                 Some(serialize_ok(&ContractParams(params.to_vec()))),
             )
             .unwrap();
@@ -428,7 +431,7 @@ pub fn evm_staticcall_test(v: &dyn VM) {
                 &A_act,
                 &A_robust_addr,
                 &TokenAmount::zero(),
-                fil_actor_evm::Method::InvokeContract as u64,
+                recall_fil_actor_evm::Method::InvokeContract as u64,
                 Some(serialize_ok(&ContractParams(params.to_vec()))),
             )
             .unwrap();
@@ -451,7 +454,7 @@ pub fn evm_staticcall_test(v: &dyn VM) {
                 &A_act,
                 &A_robust_addr,
                 &TokenAmount::zero(),
-                fil_actor_evm::Method::InvokeContract as u64,
+                recall_fil_actor_evm::Method::InvokeContract as u64,
                 Some(serialize_ok(&ContractParams(params.to_vec()))),
             )
             .unwrap();
@@ -481,7 +484,7 @@ pub fn evm_staticcall_test(v: &dyn VM) {
                 &A_act,
                 &A_robust_addr,
                 &TokenAmount::zero(),
-                fil_actor_evm::Method::InvokeContract as u64,
+                recall_fil_actor_evm::Method::InvokeContract as u64,
                 Some(serialize_ok(&ContractParams(params.to_vec()))),
             )
             .unwrap();
@@ -512,8 +515,10 @@ pub fn evm_delegatecall_test(v: &dyn VM) {
                     account,
                     &EAM_ACTOR_ADDR,
                     &TokenAmount::zero(),
-                    fil_actor_eam::Method::CreateExternal as u64,
-                    Some(serialize_ok(&fil_actor_eam::CreateExternalParams(bytecode.clone()))),
+                    recall_fil_actor_eam::Method::CreateExternal as u64,
+                    Some(serialize_ok(&recall_fil_actor_eam::CreateExternalParams(
+                        bytecode.clone(),
+                    ))),
                 )
                 .unwrap();
 
@@ -523,7 +528,7 @@ pub fn evm_delegatecall_test(v: &dyn VM) {
                 create_result.message
             );
 
-            let create_return: fil_actor_eam::CreateExternalReturn =
+            let create_return: recall_fil_actor_eam::CreateExternalReturn =
                 create_result.ret.unwrap().deserialize().expect("failed to decode results");
 
             // Make sure we deployed an EVM actor.
@@ -550,7 +555,7 @@ pub fn evm_delegatecall_test(v: &dyn VM) {
                 &A_act,
                 &A_robust_addr,
                 &TokenAmount::zero(),
-                fil_actor_evm::Method::InvokeContract as u64,
+                recall_fil_actor_evm::Method::InvokeContract as u64,
                 Some(serialize_ok(&ContractParams(params.to_vec()))),
             )
             .unwrap();
@@ -578,7 +583,7 @@ pub fn evm_delegatecall_test(v: &dyn VM) {
                 &A_act,
                 &A_robust_addr,
                 &TokenAmount::zero(),
-                fil_actor_evm::Method::InvokeContract as u64,
+                recall_fil_actor_evm::Method::InvokeContract as u64,
                 Some(serialize_ok(&ContractParams(params.to_vec()))),
             )
             .unwrap();
@@ -608,7 +613,7 @@ pub fn evm_delegatecall_test(v: &dyn VM) {
                 &A_act,
                 &A_robust_addr,
                 &value,
-                fil_actor_evm::Method::InvokeContract as u64,
+                recall_fil_actor_evm::Method::InvokeContract as u64,
                 Some(serialize_ok(&ContractParams(params.to_vec()))),
             )
             .unwrap();
@@ -647,8 +652,10 @@ pub fn evm_staticcall_delegatecall_test(v: &dyn VM) {
                     account,
                     &EAM_ACTOR_ADDR,
                     &TokenAmount::zero(),
-                    fil_actor_eam::Method::CreateExternal as u64,
-                    Some(serialize_ok(&fil_actor_eam::CreateExternalParams(bytecode.clone()))),
+                    recall_fil_actor_eam::Method::CreateExternal as u64,
+                    Some(serialize_ok(&recall_fil_actor_eam::CreateExternalParams(
+                        bytecode.clone(),
+                    ))),
                 )
                 .unwrap();
 
@@ -658,7 +665,7 @@ pub fn evm_staticcall_delegatecall_test(v: &dyn VM) {
                 create_result.message
             );
 
-            let create_return: fil_actor_eam::CreateExternalReturn =
+            let create_return: recall_fil_actor_eam::CreateExternalReturn =
                 create_result.ret.unwrap().deserialize().expect("failed to decode results");
 
             // Make sure we deployed an EVM actor.
@@ -687,7 +694,7 @@ pub fn evm_staticcall_delegatecall_test(v: &dyn VM) {
                 &A_act,
                 &A_robust_addr,
                 &TokenAmount::zero(),
-                fil_actor_evm::Method::InvokeContract as u64,
+                recall_fil_actor_evm::Method::InvokeContract as u64,
                 Some(serialize_ok(&ContractParams(params.to_vec()))),
             )
             .unwrap();
@@ -717,7 +724,7 @@ pub fn evm_staticcall_delegatecall_test(v: &dyn VM) {
                 &A_act,
                 &A_robust_addr,
                 &TokenAmount::zero(),
-                fil_actor_evm::Method::InvokeContract as u64,
+                recall_fil_actor_evm::Method::InvokeContract as u64,
                 Some(serialize_ok(&ContractParams(params.to_vec()))),
             )
             .unwrap();
@@ -733,11 +740,11 @@ pub fn evm_init_revert_data_test(v: &dyn VM) {
             &account,
             &EAM_ACTOR_ADDR,
             &TokenAmount::zero(),
-            fil_actor_eam::Method::CreateExternal as u64,
+            recall_fil_actor_eam::Method::CreateExternal as u64,
             // init code:
             // PUSH1 0x42; PUSH1 0x0; MSTORE;
             // PUSH1 0x20; PUSH1 0x0; REVERT
-            Some(serialize_ok(&fil_actor_eam::CreateExternalParams(vec![
+            Some(serialize_ok(&recall_fil_actor_eam::CreateExternalParams(vec![
                 0x60, 0x42, 0x60, 0x00, 0x52, 0x60, 0x20, 0x60, 0x00, 0xfd,
             ]))),
         )

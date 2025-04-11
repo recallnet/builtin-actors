@@ -10,27 +10,27 @@ use fvm_shared::sector::{RegisteredSealProof, SectorNumber, StoragePower};
 use num_traits::Zero;
 
 use export_macro::vm_test;
-use fil_actor_market::Method as MarketMethod;
-use fil_actor_miner::{
+use recall_fil_actor_market::Method as MarketMethod;
+use recall_fil_actor_miner::{
     max_prove_commit_duration, CompactCommD, DataActivationNotification, PieceActivationManifest,
     PieceChange, PowerPair, ProveCommitSectors3Params, ProveReplicaUpdates3Params,
     SectorActivationManifest, SectorChanges, SectorContentChangedParams, SectorOnChainInfoFlags,
     SectorUpdateManifest,
 };
-use fil_actor_miner::{Method as MinerMethod, VerifiedAllocationKey};
-use fil_actor_verifreg::{
+use recall_fil_actor_miner::{Method as MinerMethod, VerifiedAllocationKey};
+use recall_fil_actor_verifreg::{
     AllocationClaim, AllocationRequest, ClaimAllocationsParams, Method as VerifregMethod,
     SectorAllocationClaims,
 };
-use fil_actors_runtime::cbor::serialize;
-use fil_actors_runtime::runtime::Policy;
-use fil_actors_runtime::test_utils::{make_piece_cid, make_sealed_cid};
-use fil_actors_runtime::{
+use recall_fil_actors_runtime::cbor::serialize;
+use recall_fil_actors_runtime::runtime::Policy;
+use recall_fil_actors_runtime::test_utils::{make_piece_cid, make_sealed_cid};
+use recall_fil_actors_runtime::{
     EPOCHS_IN_DAY, EPOCHS_IN_YEAR, STORAGE_MARKET_ACTOR_ADDR, VERIFIED_REGISTRY_ACTOR_ADDR,
 };
-use vm_api::trace::{EmittedEvent, ExpectInvocation};
-use vm_api::util::apply_ok;
-use vm_api::VM;
+use recall_vm_api::trace::{EmittedEvent, ExpectInvocation};
+use recall_vm_api::util::apply_ok;
+use recall_vm_api::VM;
 
 use crate::deals::{DealBatcher, DealOptions};
 use crate::expects::Expect;

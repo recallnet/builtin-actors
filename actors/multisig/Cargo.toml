@@ -1,5 +1,5 @@
 [package]
-name = "fil_actor_multisig"
+name = "recall_fil_actor_multisig"
 description = "Builtin multisig actor for Filecoin"
 version.workspace = true
 license.workspace = true
@@ -14,7 +14,7 @@ keywords = ["filecoin", "web3", "wasm"]
 crate-type = ["cdylib", "lib"]
 
 [dependencies]
-fil_actors_runtime = { workspace = true}
+recall_fil_actors_runtime = { workspace = true}
 
 anyhow = { workspace = true }
 cid = { workspace = true }
@@ -31,8 +31,8 @@ num-traits = { workspace = true }
 serde = { workspace = true }
 
 [dev-dependencies]
-fil_actors_runtime = { workspace = true, features = ["test_utils", "sector-default"] }
+recall_fil_actors_runtime = { workspace = true, features = ["test_utils", "sector-default"] }
 lazy_static = { workspace = true }
 
 [features]
-fil-actor = ["fil_actors_runtime/fil-actor"]
+fil-actor = ["recall_fil_actors_runtime/fil-actor"]

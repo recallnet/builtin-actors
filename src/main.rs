@@ -1,7 +1,7 @@
 use clap::Parser;
 use std::io::Write;
 
-use fil_builtin_actors_bundle::BUNDLE_CAR;
+use recall_fil_builtin_actors_bundle::BUNDLE_CAR;
 
 #[derive(Parser)]
 #[clap(name = env!("CARGO_PKG_NAME"))]

@@ -1,12 +1,12 @@
 use export_macro::vm_test;
-use fil_actor_init::Exec4Return;
-use fil_actors_runtime::{
+use fvm_shared::{address::Address, econ::TokenAmount, error::ExitCode, METHOD_SEND};
+use num_traits::Zero;
+use recall_fil_actor_init::Exec4Return;
+use recall_fil_actors_runtime::{
     cbor::serialize, runtime::EMPTY_ARR_CID, test_utils::MULTISIG_ACTOR_CODE_ID, EAM_ACTOR_ADDR,
     EAM_ACTOR_ID, INIT_ACTOR_ADDR,
 };
-use fvm_shared::{address::Address, econ::TokenAmount, error::ExitCode, METHOD_SEND};
-use num_traits::Zero;
-use vm_api::{builtin::Type, util::serialize_ok, VM};
+use recall_vm_api::{builtin::Type, util::serialize_ok, VM};
 
 use crate::{FIRST_TEST_USER_ADDR, TEST_FAUCET_ADDR};
 
@@ -42,7 +42,7 @@ pub fn placeholder_deploy_test(v: &dyn VM) {
 
     // Deploy a multisig to the placeholder.
     let msig_ctor_params = serialize(
-        &fil_actor_multisig::ConstructorParams {
+        &recall_fil_actor_multisig::ConstructorParams {
             signers: vec![EAM_ACTOR_ADDR],
             num_approvals_threshold: 1,
             unlock_duration: 0,
@@ -57,8 +57,8 @@ pub fn placeholder_deploy_test(v: &dyn VM) {
             &EAM_ACTOR_ADDR, // so this works even if "m2-native" is disabled.
             &INIT_ACTOR_ADDR,
             &TokenAmount::zero(),
-            fil_actor_init::Method::Exec4 as u64,
-            Some(serialize_ok(&fil_actor_init::Exec4Params {
+            recall_fil_actor_init::Method::Exec4 as u64,
+            Some(serialize_ok(&recall_fil_actor_init::Exec4Params {
                 code_cid: *MULTISIG_ACTOR_CODE_ID,
                 constructor_params: msig_ctor_params.clone(),
                 subaddress: subaddr[..].to_owned().into(),

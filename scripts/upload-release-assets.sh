@@ -36,7 +36,7 @@ shasum -a 256 $release_target > $release_target_hash
 popd
 
 # prepare release
-ORG="filecoin-project"
+ORG="recallnet"
 REPO="builtin-actors"
 
 # see if the release already exists by tag

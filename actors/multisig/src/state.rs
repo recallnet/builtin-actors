@@ -12,7 +12,7 @@ use fvm_shared::econ::TokenAmount;
 use indexmap::IndexMap;
 use num_traits::Zero;
 
-use fil_actors_runtime::{actor_error, ActorError, Config, Map2, DEFAULT_HAMT_CONFIG};
+use recall_fil_actors_runtime::{actor_error, ActorError, Config, Map2, DEFAULT_HAMT_CONFIG};
 
 use super::types::Transaction;
 use super::TxnID;

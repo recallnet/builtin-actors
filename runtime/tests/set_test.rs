@@ -1,11 +1,11 @@
 // Copyright 2019-2022 ChainSafe Systems
 // SPDX-License-Identifier: Apache-2.0, MIT
 
-use fil_actors_runtime::{Set, DEFAULT_HAMT_CONFIG};
+use recall_fil_actors_runtime::{Set, DEFAULT_HAMT_CONFIG};
 
 #[test]
 fn put() {
-    let store = fil_actors_runtime::test_blockstores::MemoryBlockstore::new();
+    let store = recall_fil_actors_runtime::test_blockstores::MemoryBlockstore::new();
     let mut set = Set::empty(&store, DEFAULT_HAMT_CONFIG, "t");
 
     let key: Vec<u8> = "test".into();
@@ -17,7 +17,7 @@ fn put() {
 
 #[test]
 fn collect_keys() {
-    let store = fil_actors_runtime::test_blockstores::MemoryBlockstore::new();
+    let store = recall_fil_actors_runtime::test_blockstores::MemoryBlockstore::new();
     let mut set = Set::<_, u64>::empty(&store, DEFAULT_HAMT_CONFIG, "t");
 
     set.put(&0u64).unwrap();
@@ -33,7 +33,7 @@ fn collect_keys() {
 
 #[test]
 fn delete() {
-    let store = fil_actors_runtime::test_blockstores::MemoryBlockstore::new();
+    let store = recall_fil_actors_runtime::test_blockstores::MemoryBlockstore::new();
     let mut set = Set::empty(&store, DEFAULT_HAMT_CONFIG, "t");
 
     let key = 0u64;

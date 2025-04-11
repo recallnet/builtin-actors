@@ -9,17 +9,17 @@ use fvm_shared::error::ExitCode;
 use fvm_shared::piece::PieceInfo;
 use fvm_shared::sector::RegisteredSealProof;
 
-use fil_actor_market::{
+use harness::*;
+use recall_fil_actor_market::{
     ActivatedDeal, Actor as MarketActor, Method, SectorDeals, VerifyDealsForActivationParams,
     NO_ALLOCATION_ID,
 };
-use fil_actors_runtime::runtime::builtins::Type;
-use fil_actors_runtime::test_utils::{
+use recall_fil_actors_runtime::runtime::builtins::Type;
+use recall_fil_actors_runtime::test_utils::{
     expect_abort, expect_abort_contains_message, make_piece_cid, ACCOUNT_ACTOR_CODE_ID,
     MINER_ACTOR_CODE_ID,
 };
-use fil_actors_runtime::EPOCHS_IN_DAY;
-use harness::*;
+use recall_fil_actors_runtime::EPOCHS_IN_DAY;
 
 mod harness;
 const START_EPOCH: ChainEpoch = 10;
@@ -300,7 +300,7 @@ fn fail_when_current_epoch_is_greater_than_proposal_start_epoch() {
         }],
     };
     expect_abort(
-        fil_actor_market::EX_DEAL_EXPIRED,
+        recall_fil_actor_market::EX_DEAL_EXPIRED,
         rt.call::<MarketActor>(
             Method::VerifyDealsForActivation as u64,
             IpldBlock::serialize_cbor(&params).unwrap(),

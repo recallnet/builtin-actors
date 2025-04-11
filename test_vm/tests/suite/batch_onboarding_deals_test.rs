@@ -1,7 +1,7 @@
-use fil_actors_integration_tests::tests::{
+use recall_fil_actors_integration_tests::tests::{
     batch_onboarding_deals_test, pre_commit_requires_commd_test,
 };
-use fil_actors_runtime::test_blockstores::MemoryBlockstore;
+use recall_fil_actors_runtime::test_blockstores::MemoryBlockstore;
 use test_vm::TestVM;
 
 #[test]

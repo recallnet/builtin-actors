@@ -3,8 +3,6 @@ use crate::{
     PreCommitMap, QuantSpec, SectorOnChainInfo, SectorOnChainInfoFlags, Sectors, State,
     NO_QUANTIZATION, PRECOMMIT_CONFIG,
 };
-use fil_actors_runtime::runtime::Policy;
-use fil_actors_runtime::{DealWeight, MessageAccumulator};
 use fvm_ipld_bitfield::BitField;
 use fvm_ipld_blockstore::Blockstore;
 use fvm_ipld_encoding::CborStore;
@@ -13,6 +11,8 @@ use fvm_shared::clock::ChainEpoch;
 use fvm_shared::econ::TokenAmount;
 use fvm_shared::sector::{RegisteredPoStProof, SectorNumber, SectorSize};
 use num_traits::Zero;
+use recall_fil_actors_runtime::runtime::Policy;
+use recall_fil_actors_runtime::{DealWeight, MessageAccumulator};
 use std::collections::{BTreeMap, BTreeSet, HashMap, HashSet};
 
 pub fn check_state_invariants<BS: Blockstore>(

@@ -2,7 +2,7 @@ use proc_macro::TokenStream;
 use quote::{format_ident, quote};
 
 /// The vm_test attribute is used to decorate tests that run on an implementation of the FVM (i.e.
-/// taking vm_api::VM as an argument). Decorated tests are added to the global TEST_REGISTRY which
+/// taking recall_vm_api::VM as an argument). Decorated tests are added to the global TEST_REGISTRY which
 /// is exported for use in other environments.
 /// TEST_REGISTRY acts as a single entry point for external crates/tooling to discover the suite of
 /// builtin-actors' integration tests.

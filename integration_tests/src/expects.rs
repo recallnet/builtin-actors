@@ -13,24 +13,24 @@ use fvm_shared::sector::{RegisteredSealProof, SectorNumber};
 use fvm_shared::{ActorID, METHOD_SEND};
 use num_traits::Zero;
 
-use fil_actor_account::types::AuthenticateMessageParams;
-use fil_actor_datacap::BalanceParams;
-use fil_actor_market::{
+use recall_fil_actor_account::types::AuthenticateMessageParams;
+use recall_fil_actor_datacap::BalanceParams;
+use recall_fil_actor_market::{
     BatchActivateDealsParams, OnMinerSectorsTerminateParams, SectorDeals,
     VerifyDealsForActivationParams,
 };
-use fil_actor_miner::ext::verifreg::ClaimID;
-use fil_actor_miner::{IsControllingAddressParam, PowerPair};
-use fil_actor_power::{UpdateClaimedPowerParams, UpdatePledgeTotalParams};
-use fil_actor_verifreg::GetClaimsParams;
-use fil_actors_runtime::{
+use recall_fil_actor_miner::ext::verifreg::ClaimID;
+use recall_fil_actor_miner::{IsControllingAddressParam, PowerPair};
+use recall_fil_actor_power::{UpdateClaimedPowerParams, UpdatePledgeTotalParams};
+use recall_fil_actor_verifreg::GetClaimsParams;
+use recall_fil_actors_runtime::{
     EventBuilder, BURNT_FUNDS_ACTOR_ADDR, DATACAP_TOKEN_ACTOR_ADDR, DATACAP_TOKEN_ACTOR_ID,
     REWARD_ACTOR_ADDR, STORAGE_MARKET_ACTOR_ADDR, STORAGE_MARKET_ACTOR_ID,
     STORAGE_POWER_ACTOR_ADDR, STORAGE_POWER_ACTOR_ID, VERIFIED_REGISTRY_ACTOR_ADDR,
     VERIFIED_REGISTRY_ACTOR_ID,
 };
 
-use vm_api::trace::{EmittedEvent, ExpectInvocation};
+use recall_vm_api::trace::{EmittedEvent, ExpectInvocation};
 
 /// Static helper functions for creating invocation expectations.
 pub struct Expect {}
@@ -70,7 +70,7 @@ impl Expect {
         ExpectInvocation {
             from,
             to: STORAGE_MARKET_ACTOR_ADDR,
-            method: fil_actor_market::Method::BatchActivateDeals as u64,
+            method: recall_fil_actor_market::Method::BatchActivateDeals as u64,
             params: Some(params),
             value: Some(TokenAmount::zero()),
             subinvocs: Some(vec![]),
@@ -99,7 +99,7 @@ impl Expect {
         ExpectInvocation {
             from,
             to: STORAGE_MARKET_ACTOR_ADDR,
-            method: fil_actor_market::Method::OnMinerSectorsTerminate as u64,
+            method: recall_fil_actor_market::Method::OnMinerSectorsTerminate as u64,
             params: Some(params),
             value: Some(TokenAmount::zero()),
             subinvocs: Some(vec![Expect::burn(STORAGE_MARKET_ACTOR_ID, None)]),
@@ -113,7 +113,7 @@ impl Expect {
         ExpectInvocation {
             from,
             to: STORAGE_MARKET_ACTOR_ADDR,
-            method: fil_actor_market::Method::VerifyDealsForActivation as u64,
+            method: recall_fil_actor_market::Method::VerifyDealsForActivation as u64,
             params: Some(params),
             value: Some(TokenAmount::zero()),
             subinvocs: Some(vec![]),
@@ -124,7 +124,7 @@ impl Expect {
         ExpectInvocation {
             from: STORAGE_POWER_ACTOR_ID,
             to,
-            method: fil_actor_miner::Method::OnDeferredCronEvent as u64,
+            method: recall_fil_actor_miner::Method::OnDeferredCronEvent as u64,
             value: Some(TokenAmount::zero()),
             subinvocs: Some(vec![]),
             ..Default::default()
@@ -139,7 +139,7 @@ impl Expect {
         ExpectInvocation {
             from,
             to,
-            method: fil_actor_miner::Method::IsControllingAddressExported as u64,
+            method: recall_fil_actor_miner::Method::IsControllingAddressExported as u64,
             params: Some(params),
             value: Some(TokenAmount::zero()),
             subinvocs: Some(vec![]),
@@ -150,7 +150,7 @@ impl Expect {
         ExpectInvocation {
             from,
             to: STORAGE_POWER_ACTOR_ADDR,
-            method: fil_actor_power::Method::CurrentTotalPower as u64,
+            method: recall_fil_actor_power::Method::CurrentTotalPower as u64,
             subinvocs: Some(vec![]),
             value: Some(TokenAmount::zero()),
             ..Default::default()
@@ -161,7 +161,7 @@ impl Expect {
         ExpectInvocation {
             from,
             to: STORAGE_POWER_ACTOR_ADDR,
-            method: fil_actor_power::Method::EnrollCronEvent as u64,
+            method: recall_fil_actor_power::Method::EnrollCronEvent as u64,
             value: Some(TokenAmount::zero()),
             subinvocs: Some(vec![]),
             ..Default::default()
@@ -176,7 +176,7 @@ impl Expect {
         ExpectInvocation {
             from,
             to: STORAGE_POWER_ACTOR_ADDR,
-            method: fil_actor_power::Method::UpdateClaimedPower as u64,
+            method: recall_fil_actor_power::Method::UpdateClaimedPower as u64,
             params: Some(params),
             value: Some(TokenAmount::zero()),
             subinvocs: Some(vec![]),
@@ -190,7 +190,7 @@ impl Expect {
         ExpectInvocation {
             from,
             to: STORAGE_POWER_ACTOR_ADDR,
-            method: fil_actor_power::Method::UpdatePledgeTotal as u64,
+            method: recall_fil_actor_power::Method::UpdatePledgeTotal as u64,
             params,
             value: Some(TokenAmount::zero()),
             subinvocs: Some(vec![]),
@@ -202,7 +202,7 @@ impl Expect {
         ExpectInvocation {
             from: STORAGE_POWER_ACTOR_ID,
             to: REWARD_ACTOR_ADDR,
-            method: fil_actor_reward::Method::UpdateNetworkKPI as u64,
+            method: recall_fil_actor_reward::Method::UpdateNetworkKPI as u64,
             value: Some(TokenAmount::zero()),
             subinvocs: Some(vec![]),
             ..Default::default()
@@ -212,7 +212,7 @@ impl Expect {
         ExpectInvocation {
             from,
             to: REWARD_ACTOR_ADDR,
-            method: fil_actor_reward::Method::ThisEpochReward as u64,
+            method: recall_fil_actor_reward::Method::ThisEpochReward as u64,
             value: Some(TokenAmount::zero()),
             subinvocs: Some(vec![]),
             ..Default::default()
@@ -243,11 +243,11 @@ impl Expect {
         ExpectInvocation {
             from,
             to: DATACAP_TOKEN_ACTOR_ADDR,
-            method: fil_actor_datacap::Method::TransferExported as u64,
+            method: recall_fil_actor_datacap::Method::TransferExported as u64,
             subinvocs: Some(vec![ExpectInvocation {
                 from: DATACAP_TOKEN_ACTOR_ID,
                 to: VERIFIED_REGISTRY_ACTOR_ADDR,
-                method: fil_actor_verifreg::Method::UniversalReceiverHook as u64,
+                method: recall_fil_actor_verifreg::Method::UniversalReceiverHook as u64,
                 params: Some(
                     IpldBlock::serialize_cbor(&UniversalReceiverParams {
                         type_: FRC46_TOKEN_TYPE,
@@ -274,7 +274,7 @@ impl Expect {
         ExpectInvocation {
             from,
             to: VERIFIED_REGISTRY_ACTOR_ADDR,
-            method: fil_actor_verifreg::Method::GetClaims as u64,
+            method: recall_fil_actor_verifreg::Method::GetClaims as u64,
             params: Some(params),
             value: Some(TokenAmount::zero()),
             subinvocs: Some(vec![]),

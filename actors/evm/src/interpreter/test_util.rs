@@ -14,7 +14,7 @@ macro_rules! evm_instruction {
 #[macro_export]
 macro_rules! evm_unit_test {
     (($rt:ident) $init:block ($machine:ident) { $($inst:tt;)* } $($body:tt)*) => {
-        use ::fil_actors_runtime::test_utils::MockRuntime;
+        use ::recall_fil_actors_runtime::test_utils::MockRuntime;
         use ::fvm_shared::econ::TokenAmount;
         use $crate::interpreter::{execution::Machine, system::System, Output};
         use $crate::{Bytecode, EthAddress, ExecutionState};
@@ -48,7 +48,7 @@ macro_rules! evm_unit_test {
     };
 
     (($machine:ident) { $($inst:tt;)* } $($body:tt)*) => {
-        use ::fil_actors_runtime::test_utils::MockRuntime;
+        use ::recall_fil_actors_runtime::test_utils::MockRuntime;
         use ::fvm_shared::econ::TokenAmount;
         use $crate::interpreter::{execution::Machine, system::System, Output};
         use $crate::{Bytecode, EthAddress, ExecutionState};

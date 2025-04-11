@@ -1,5 +1,5 @@
 [package]
-name = "fil_actor_placeholder"
+name = "recall_fil_actor_placeholder"
 description = "Builtin placeholder actor for Filecoin"
 version.workspace = true
 license.workspace = true

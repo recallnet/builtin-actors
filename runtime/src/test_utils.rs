@@ -43,8 +43,8 @@ use crate::runtime::{
 use crate::{actor_error, ActorError, SendError};
 use libsecp256k1::{recover, Message, RecoveryId, Signature as EcsdaSignature};
 use rand::prelude::*;
+use recall_vm_api::MockPrimitives;
 use serde::Serialize;
-use vm_api::MockPrimitives;
 
 use crate::test_blockstores::MemoryBlockstore;
 use fvm_ipld_encoding::ipld_block::IpldBlock;

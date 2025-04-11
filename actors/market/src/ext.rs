@@ -5,7 +5,7 @@ use fvm_shared::bigint::bigint_ser;
 use fvm_shared::econ::TokenAmount;
 use fvm_shared::sector::StoragePower;
 
-use fil_actors_runtime::reward::FilterEstimate;
+use recall_fil_actors_runtime::reward::FilterEstimate;
 
 pub mod account {
     use super::*;
@@ -98,10 +98,10 @@ pub mod miner {
 pub mod verifreg {
     use super::*;
     use cid::Cid;
-    use fil_actors_runtime::BatchReturn;
     use fvm_shared::clock::ChainEpoch;
     use fvm_shared::piece::PaddedPieceSize;
     use fvm_shared::ActorID;
+    use recall_fil_actors_runtime::BatchReturn;
 
     pub type AllocationID = u64;
     pub type ClaimID = u64;

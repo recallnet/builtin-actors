@@ -1,10 +1,10 @@
-use fil_actors_integration_tests::tests::create_miner_and_upgrade_sector;
-use fil_actors_runtime::runtime::Policy;
-use fil_actors_runtime::test_blockstores::MemoryBlockstore;
+use recall_fil_actors_integration_tests::tests::create_miner_and_upgrade_sector;
+use recall_fil_actors_runtime::runtime::Policy;
+use recall_fil_actors_runtime::test_blockstores::MemoryBlockstore;
 use std::rc::Rc;
 use test_vm::TestVM;
 
-use fil_actors_integration_tests::tests::{
+use recall_fil_actors_integration_tests::tests::{
     bad_batch_size_failure_test, bad_post_upgrade_dispute_test,
     deal_included_in_multiple_sectors_failure_test, extend_after_upgrade_test,
     immutable_deadline_failure_test, nodispute_after_upgrade_test,
@@ -14,7 +14,7 @@ use fil_actors_integration_tests::tests::{
     upgrade_and_miss_post_test, upgrade_bad_post_dispute_test, wrong_deadline_index_failure_test,
     wrong_partition_index_failure_test,
 };
-use fil_actors_integration_tests::util::assert_invariants;
+use recall_fil_actors_integration_tests::util::assert_invariants;
 
 // ---- Success cases ----
 // Tests that an active CC sector can be correctly upgraded, and the expected state changes occur

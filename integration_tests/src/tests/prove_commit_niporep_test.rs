@@ -1,4 +1,3 @@
-use fil_actors_runtime::runtime::Policy;
 use fvm_ipld_encoding::ipld_block::IpldBlock;
 use fvm_ipld_encoding::RawBytes;
 use fvm_shared::bigint::BigInt;
@@ -6,16 +5,17 @@ use fvm_shared::econ::TokenAmount;
 use fvm_shared::error::ExitCode;
 use fvm_shared::sector::{RegisteredAggregateProof, RegisteredSealProof, SectorNumber};
 use num_traits::Zero;
+use recall_fil_actors_runtime::runtime::Policy;
 
 use export_macro::vm_test;
-use fil_actor_miner::{Method as MinerMethod, SectorOnChainInfoFlags};
-use fil_actor_miner::{
+use recall_fil_actor_miner::{Method as MinerMethod, SectorOnChainInfoFlags};
+use recall_fil_actor_miner::{
     ProveCommitSectorsNIParams, ProveCommitSectorsNIReturn, SectorNIActivationInfo,
 };
-use fil_actors_runtime::test_utils::make_sealed_cid;
-use vm_api::trace::{EmittedEvent, ExpectInvocation};
-use vm_api::util::{apply_ok, DynBlockstore};
-use vm_api::VM;
+use recall_fil_actors_runtime::test_utils::make_sealed_cid;
+use recall_vm_api::trace::{EmittedEvent, ExpectInvocation};
+use recall_vm_api::util::{apply_ok, DynBlockstore};
+use recall_vm_api::VM;
 
 use crate::expects::Expect;
 use crate::util::{

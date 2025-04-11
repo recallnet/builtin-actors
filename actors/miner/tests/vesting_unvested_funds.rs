@@ -1,8 +1,8 @@
-use fil_actor_miner::VestSpec;
-use fil_actor_miner::VestingFunds;
 use fvm_ipld_encoding::CborStore;
 use fvm_shared::bigint::Zero;
 use fvm_shared::econ::TokenAmount;
+use recall_fil_actor_miner::VestSpec;
+use recall_fil_actor_miner::VestingFunds;
 
 mod state_harness;
 use state_harness::*;

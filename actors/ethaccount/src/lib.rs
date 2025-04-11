@@ -5,14 +5,14 @@ use fvm_shared::address::Payload;
 use fvm_shared::{MethodNum, METHOD_CONSTRUCTOR};
 use num_derive::FromPrimitive;
 
-use fil_actors_runtime::runtime::{ActorCode, Runtime};
-use fil_actors_runtime::{
+use recall_fil_actors_runtime::runtime::{ActorCode, Runtime};
+use recall_fil_actors_runtime::{
     actor_dispatch, actor_error, ActorError, EAM_ACTOR_ID, FIRST_EXPORTED_METHOD_NUMBER,
     SYSTEM_ACTOR_ADDR,
 };
 
 #[cfg(feature = "fil-actor")]
-fil_actors_runtime::wasm_trampoline!(EthAccountActor);
+recall_fil_actors_runtime::wasm_trampoline!(EthAccountActor);
 
 /// Ethereum Account actor methods.
 #[derive(FromPrimitive)]

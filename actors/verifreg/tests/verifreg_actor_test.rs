@@ -16,8 +16,8 @@ lazy_static! {
 }
 
 mod util {
-    use fil_actors_runtime::test_utils::MockRuntime;
     use fvm_shared::sector::StoragePower;
+    use recall_fil_actors_runtime::test_utils::MockRuntime;
 
     pub fn verifier_allowance(rt: &MockRuntime) -> StoragePower {
         rt.policy.minimum_verified_allocation_size.clone() + 42
@@ -34,10 +34,10 @@ mod construction {
     use fvm_shared::error::ExitCode;
     use fvm_shared::MethodNum;
 
-    use fil_actor_verifreg::{Actor as VerifregActor, Method};
-    use fil_actors_runtime::test_utils::*;
-    use fil_actors_runtime::SYSTEM_ACTOR_ADDR;
     use harness::*;
+    use recall_fil_actor_verifreg::{Actor as VerifregActor, Method};
+    use recall_fil_actors_runtime::test_utils::*;
+    use recall_fil_actors_runtime::SYSTEM_ACTOR_ADDR;
 
     use crate::*;
 
@@ -85,9 +85,9 @@ mod verifiers {
     use fvm_shared::error::ExitCode;
     use fvm_shared::{MethodNum, METHOD_SEND};
 
-    use fil_actor_verifreg::{Actor as VerifregActor, AddVerifierParams, DataCap, Method};
-    use fil_actors_runtime::test_utils::*;
     use harness::*;
+    use recall_fil_actor_verifreg::{Actor as VerifregActor, AddVerifierParams, DataCap, Method};
+    use recall_fil_actors_runtime::test_utils::*;
     use util::*;
 
     use crate::*;
@@ -248,12 +248,14 @@ mod clients {
     use num_traits::ToPrimitive;
     use num_traits::Zero;
 
-    use fil_actor_verifreg::{
+    use harness::*;
+    use recall_fil_actor_verifreg::{
         ext, Actor as VerifregActor, AddVerifiedClientParams, DataCap, Method,
     };
-    use fil_actors_runtime::test_utils::*;
-    use fil_actors_runtime::{EventBuilder, DATACAP_TOKEN_ACTOR_ADDR, STORAGE_MARKET_ACTOR_ADDR};
-    use harness::*;
+    use recall_fil_actors_runtime::test_utils::*;
+    use recall_fil_actors_runtime::{
+        EventBuilder, DATACAP_TOKEN_ACTOR_ADDR, STORAGE_MARKET_ACTOR_ADDR,
+    };
     use util::*;
 
     use crate::*;
@@ -528,20 +530,20 @@ mod allocs_claims {
     use fvm_shared::{ActorID, MethodNum};
     use num_traits::Zero;
 
-    use fil_actor_verifreg::{
+    use harness::*;
+    use recall_fil_actor_verifreg::{
         Actor, AllocationID, ClaimTerm, DataCap, ExtendClaimTermsParams, GetClaimsParams, Method,
         State,
     };
-    use fil_actor_verifreg::{Claim, ExtendClaimTermsReturn};
-    use fil_actors_runtime::runtime::policy_constants::{
+    use recall_fil_actor_verifreg::{Claim, ExtendClaimTermsReturn};
+    use recall_fil_actors_runtime::runtime::policy_constants::{
         MAXIMUM_VERIFIED_ALLOCATION_TERM, MINIMUM_VERIFIED_ALLOCATION_SIZE,
         MINIMUM_VERIFIED_ALLOCATION_TERM,
     };
-    use fil_actors_runtime::test_utils::{
+    use recall_fil_actors_runtime::test_utils::{
         expect_abort, expect_abort_contains_message, ACCOUNT_ACTOR_CODE_ID, EVM_ACTOR_CODE_ID,
     };
-    use fil_actors_runtime::FailCode;
-    use harness::*;
+    use recall_fil_actors_runtime::FailCode;
 
     use crate::*;
 
@@ -1187,17 +1189,17 @@ mod datacap {
     use fvm_shared::error::ExitCode;
     use fvm_shared::{ActorID, MethodNum};
 
-    use fil_actor_verifreg::{Actor as VerifregActor, Claim, Method, State};
-    use fil_actors_runtime::cbor::serialize;
-    use fil_actors_runtime::runtime::policy_constants::{
+    use harness::*;
+    use recall_fil_actor_verifreg::{Actor as VerifregActor, Claim, Method, State};
+    use recall_fil_actors_runtime::cbor::serialize;
+    use recall_fil_actors_runtime::runtime::policy_constants::{
         MAXIMUM_VERIFIED_ALLOCATION_EXPIRATION, MAXIMUM_VERIFIED_ALLOCATION_TERM,
         MINIMUM_VERIFIED_ALLOCATION_SIZE, MINIMUM_VERIFIED_ALLOCATION_TERM,
     };
-    use fil_actors_runtime::test_utils::*;
-    use fil_actors_runtime::{
+    use recall_fil_actors_runtime::test_utils::*;
+    use recall_fil_actors_runtime::{
         BatchReturn, DATACAP_TOKEN_ACTOR_ADDR, EPOCHS_IN_YEAR, STORAGE_MARKET_ACTOR_ADDR,
     };
-    use harness::*;
 
     use crate::*;
 
@@ -1602,9 +1604,11 @@ mod serialization {
     use std::str::FromStr;
 
     use cid::Cid;
-    use fil_actor_verifreg::{AllocationClaim, ClaimAllocationsParams, SectorAllocationClaims};
     use fvm_ipld_encoding::ipld_block::IpldBlock;
     use fvm_shared::piece::PaddedPieceSize;
+    use recall_fil_actor_verifreg::{
+        AllocationClaim, ClaimAllocationsParams, SectorAllocationClaims,
+    };
 
     #[test]
     fn claim_allocations_params() {

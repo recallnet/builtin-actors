@@ -1,4 +1,4 @@
-use fil_actors_integration_tests::tests::{
+use recall_fil_actors_integration_tests::tests::{
     all_deals_are_good_test, psd_all_deals_are_bad_test, psd_bad_piece_size_test, psd_bad_sig_test,
     psd_client_address_cannot_be_resolved_test, psd_deal_duration_too_long_test,
     psd_duplicate_deal_in_batch_test, psd_duplicate_deal_in_state_test,
@@ -7,7 +7,7 @@ use fil_actors_integration_tests::tests::{
     psd_random_assortment_of_failures_test, psd_start_time_in_past_test,
     psd_valid_deals_with_ones_longer_than_540_test, psd_verified_deal_fails_getting_datacap_test,
 };
-use fil_actors_runtime::test_blockstores::MemoryBlockstore;
+use recall_fil_actors_runtime::test_blockstores::MemoryBlockstore;
 use test_vm::TestVM;
 
 #[test]

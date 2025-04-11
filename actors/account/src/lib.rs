@@ -9,10 +9,10 @@ use fvm_shared::error::ExitCode;
 use fvm_shared::{MethodNum, METHOD_CONSTRUCTOR};
 use num_derive::FromPrimitive;
 
-use fil_actors_runtime::builtin::singletons::SYSTEM_ACTOR_ADDR;
-use fil_actors_runtime::runtime::{ActorCode, Runtime};
-use fil_actors_runtime::{actor_dispatch, ActorDowncast, FIRST_EXPORTED_METHOD_NUMBER};
-use fil_actors_runtime::{actor_error, ActorError};
+use recall_fil_actors_runtime::builtin::singletons::SYSTEM_ACTOR_ADDR;
+use recall_fil_actors_runtime::runtime::{ActorCode, Runtime};
+use recall_fil_actors_runtime::{actor_dispatch, ActorDowncast, FIRST_EXPORTED_METHOD_NUMBER};
+use recall_fil_actors_runtime::{actor_error, ActorError};
 use types::{AuthenticateMessageReturn, ConstructorParams, PubkeyAddressReturn};
 
 use crate::types::AuthenticateMessageParams;
@@ -24,7 +24,7 @@ pub mod testing;
 pub mod types;
 
 #[cfg(feature = "fil-actor")]
-fil_actors_runtime::wasm_trampoline!(Actor);
+recall_fil_actors_runtime::wasm_trampoline!(Actor);
 
 /// Account actor methods available
 #[derive(FromPrimitive)]
