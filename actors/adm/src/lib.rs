@@ -37,6 +37,7 @@ pub enum Method {
     CreateExternal = 1214262202,
     UpdateDeployers = 1768606754,
     ListMetadata = 2283215593,
+    GetMachineCode = 2892692559, //= frc42_dispatch::method_hash!("GetMachineCode");
     InvokeContract = 3844450837, //= frc42_dispatch::method_hash!("InvokeEVM")
 }
 
@@ -114,12 +115,6 @@ fn ensure_deployer_allowed(rt: &impl Runtime) -> Result<(), ActorError> {
     Ok(())
 }
 
-fn get_machine_code(rt: &impl Runtime, kind: &Kind) -> Result<Cid, ActorError> {
-    rt.state::<State>()?
-        .get_machine_code(rt.store(), kind)?
-        .ok_or(ActorError::not_found(format!("machine code for kind '{}' not found", kind)))
-}
-
 pub struct AdmActor;
 
 impl AdmActor {
@@ -177,7 +172,7 @@ impl AdmActor {
             format!("failed to resolve actor for address {}", params.owner),
         ))?;
         let owner = Address::new_id(owner_id);
-        let machine_code = get_machine_code(rt, &params.kind)?;
+        let machine_code = Self::get_machine_code(rt, params.kind)?;
         let ret = create_machine(rt, owner, machine_code, params.metadata.clone())?;
         let address = Address::new_id(ret.actor_id);
 
@@ -253,6 +248,12 @@ impl AdmActor {
             Err(actor_error!(illegal_argument, "invalid call".to_string()))
         }
     }
+
+    pub fn get_machine_code(rt: &impl Runtime, kind: Kind) -> Result<Cid, ActorError> {
+        rt.state::<State>()?
+            .get_machine_code(rt.store(), &kind)?
+            .ok_or(ActorError::not_found(format!("machine code for kind '{}' not found", kind)))
+    }
 }
 
 impl ActorCode for AdmActor {
@@ -267,6 +268,7 @@ impl ActorCode for AdmActor {
         CreateExternal => create_external,
         UpdateDeployers => update_deployers,
         ListMetadata => list_metadata,
+        GetMachineCode => get_machine_code,
         InvokeContract => invoke_contract,
     }
 }
