@@ -250,6 +250,7 @@ impl AdmActor {
     }
 
     pub fn get_machine_code(rt: &impl Runtime, kind: Kind) -> Result<Cid, ActorError> {
+        rt.validate_immediate_caller_accept_any()?;
         rt.state::<State>()?
             .get_machine_code(rt.store(), &kind)?
             .ok_or(ActorError::not_found(format!("machine code for kind '{}' not found", kind)))
