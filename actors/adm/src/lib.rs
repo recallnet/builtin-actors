@@ -172,7 +172,7 @@ impl AdmActor {
             format!("failed to resolve actor for address {}", params.owner),
         ))?;
         let owner = Address::new_id(owner_id);
-        let machine_code = Self::get_machine_code(rt, params.kind)?;
+        let machine_code = Self::retrieve_machine_code(rt, params.kind)?;
         let ret = create_machine(rt, owner, machine_code, params.metadata.clone())?;
         let address = Address::new_id(ret.actor_id);
 
@@ -251,6 +251,10 @@ impl AdmActor {
 
     pub fn get_machine_code(rt: &impl Runtime, kind: Kind) -> Result<Cid, ActorError> {
         rt.validate_immediate_caller_accept_any()?;
+        Self::retrieve_machine_code(rt, kind)
+    }
+
+    fn retrieve_machine_code(rt: &impl Runtime, kind: Kind) -> Result<Cid, ActorError> {
         rt.state::<State>()?
             .get_machine_code(rt.store(), &kind)?
             .ok_or(ActorError::not_found(format!("machine code for kind '{}' not found", kind)))
