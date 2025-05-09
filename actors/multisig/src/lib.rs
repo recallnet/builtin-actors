@@ -15,10 +15,10 @@ use fvm_shared::METHOD_CONSTRUCTOR;
 use num_derive::FromPrimitive;
 use num_traits::Zero;
 
-use fil_actors_runtime::cbor::serialize_vec;
-use fil_actors_runtime::runtime::{ActorCode, Primitives, Runtime};
-use fil_actors_runtime::FIRST_EXPORTED_METHOD_NUMBER;
-use fil_actors_runtime::{
+use recall_fil_actors_runtime::cbor::serialize_vec;
+use recall_fil_actors_runtime::runtime::{ActorCode, Primitives, Runtime};
+use recall_fil_actors_runtime::FIRST_EXPORTED_METHOD_NUMBER;
+use recall_fil_actors_runtime::{
     actor_dispatch, actor_error, extract_send_result, resolve_to_actor_id, ActorContext,
     ActorError, AsActorError, INIT_ACTOR_ADDR,
 };
@@ -27,7 +27,7 @@ pub use self::state::*;
 pub use self::types::*;
 
 #[cfg(feature = "fil-actor")]
-fil_actors_runtime::wasm_trampoline!(Actor);
+recall_fil_actors_runtime::wasm_trampoline!(Actor);
 
 mod state;
 pub mod testing;

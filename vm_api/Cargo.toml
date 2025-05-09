@@ -1,12 +1,11 @@
 [package]
-name = "vm_api"
+name = "recall_vm_api"
 description = "Abstract virtual machine interface used for testing FVM native wasm actors"
-version = "1.0.0"
+version.workspace = true
 license = "MIT OR Apache-2.0"
 authors = ["Protocol Labs", "Filecoin Core Devs"]
 edition = "2021"
 keywords = ["filecoin", "web3", "wasm"]
-publish = false
 
 [lib]
 

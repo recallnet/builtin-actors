@@ -2,17 +2,17 @@
 // SPDX-License-Identifier: Apache-2.0, MIT
 
 use cid::Cid;
-use fil_actors_runtime::runtime::builtins::Type;
-use fil_actors_runtime::runtime::{ActorCode, Runtime};
+use recall_fil_actors_runtime::runtime::builtins::Type;
+use recall_fil_actors_runtime::runtime::{ActorCode, Runtime};
 
-use fil_actors_runtime::{
-    actor_dispatch, actor_error, extract_send_result, ActorContext, ActorError, AsActorError,
-    EAM_ACTOR_ADDR, SYSTEM_ACTOR_ADDR,
-};
 use fvm_shared::address::Address;
 use fvm_shared::error::ExitCode;
 use fvm_shared::{ActorID, METHOD_CONSTRUCTOR};
 use num_derive::FromPrimitive;
+use recall_fil_actors_runtime::{
+    actor_dispatch, actor_error, extract_send_result, ActorContext, ActorError, AsActorError,
+    EAM_ACTOR_ADDR, SYSTEM_ACTOR_ADDR,
+};
 
 pub use self::state::State;
 pub use self::types::*;
@@ -22,7 +22,7 @@ pub mod testing;
 mod types;
 
 #[cfg(feature = "fil-actor")]
-fil_actors_runtime::wasm_trampoline!(Actor);
+recall_fil_actors_runtime::wasm_trampoline!(Actor);
 
 /// Init actor methods available
 #[derive(FromPrimitive)]

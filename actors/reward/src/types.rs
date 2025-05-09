@@ -20,7 +20,7 @@ pub struct AwardBlockRewardParams {
     pub win_count: i64,
 }
 
-pub use fil_actors_runtime::builtin::reward::ThisEpochRewardReturn;
+pub use recall_fil_actors_runtime::builtin::reward::ThisEpochRewardReturn;
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize_tuple, Deserialize_tuple)]
 #[serde(transparent)]

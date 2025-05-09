@@ -1,7 +1,7 @@
-use fil_actors_integration_tests::tests::{
+use recall_fil_actors_integration_tests::tests::{
     deal_passes_claim_fails_test, expired_allocations_test, verified_claim_scenario_test,
 };
-use fil_actors_runtime::test_blockstores::MemoryBlockstore;
+use recall_fil_actors_runtime::test_blockstores::MemoryBlockstore;
 use test_vm::TestVM;
 
 #[test]

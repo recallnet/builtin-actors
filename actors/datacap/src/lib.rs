@@ -19,18 +19,18 @@ use lazy_static::lazy_static;
 use log::info;
 use num_derive::FromPrimitive;
 
-use fil_actors_runtime::runtime::{ActorCode, Runtime};
-use fil_actors_runtime::{
+use fvm_ipld_encoding::ipld_block::IpldBlock;
+use recall_fil_actors_runtime::runtime::{ActorCode, Runtime};
+use recall_fil_actors_runtime::{
     actor_dispatch, actor_error, extract_send_result, ActorContext, ActorError, AsActorError,
     SYSTEM_ACTOR_ADDR,
 };
-use fvm_ipld_encoding::ipld_block::IpldBlock;
 
 pub use self::state::State;
 pub use self::types::*;
 
 #[cfg(feature = "fil-actor")]
-fil_actors_runtime::wasm_trampoline!(Actor);
+recall_fil_actors_runtime::wasm_trampoline!(Actor);
 
 mod state;
 pub mod testing;

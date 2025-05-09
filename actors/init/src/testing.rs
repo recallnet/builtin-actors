@@ -6,7 +6,9 @@ use fvm_shared::{
     ActorID,
 };
 
-use fil_actors_runtime::{MessageAccumulator, DEFAULT_HAMT_CONFIG, FIRST_NON_SINGLETON_ADDR};
+use recall_fil_actors_runtime::{
+    MessageAccumulator, DEFAULT_HAMT_CONFIG, FIRST_NON_SINGLETON_ADDR,
+};
 
 use crate::state::AddressMap;
 use crate::State;

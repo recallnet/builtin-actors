@@ -24,7 +24,7 @@ jobs:
         # with the default name they would override each other.
         LLVM_PROFILE_FILE: "%m.profraw"
         RUSTFLAGS: "-Cinstrument-coverage"
-      run: cargo test --workspace --exclude fil_builtin_actors_bundle
+      run: cargo test --workspace --exclude recall_fil_builtin_actors_bundle
     - name: Merge profiling data
       # Do *not* use sparse output. It leads to more lines that are not taken
       # into account at all

@@ -7,7 +7,7 @@ use fvm_shared::address::Address;
 use fvm_shared::econ::TokenAmount;
 use num_traits::Zero;
 
-use fil_actors_runtime::{
+use recall_fil_actors_runtime::{
     actor_error, ActorContext, ActorError, Config, Map2, DEFAULT_HAMT_CONFIG,
 };
 
@@ -117,9 +117,9 @@ where
 
 #[cfg(test)]
 mod tests {
-    use fil_actors_runtime::test_blockstores::MemoryBlockstore;
     use fvm_shared::address::Address;
     use fvm_shared::econ::TokenAmount;
+    use recall_fil_actors_runtime::test_blockstores::MemoryBlockstore;
 
     use crate::balance_table::BalanceTable;
 

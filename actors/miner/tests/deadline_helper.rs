@@ -1,8 +1,8 @@
-use fil_actor_miner::{
+use recall_fil_actor_miner::{
     deadline_available_for_compaction, deadline_available_for_optimistic_post_dispute,
     new_deadline_info,
 };
-use fil_actors_runtime::runtime::Policy;
+use recall_fil_actors_runtime::runtime::Policy;
 
 #[test]
 fn test_compaction_window() {

@@ -3,9 +3,9 @@ mod serialization {
     use std::str::FromStr;
 
     use cid::Cid;
-    use fil_actor_miner::{ProveCommitSectorsNIParams, SectorNIActivationInfo};
     use fvm_ipld_encoding::ipld_block::IpldBlock;
     use fvm_shared::sector::{RegisteredAggregateProof, RegisteredSealProof};
+    use recall_fil_actor_miner::{ProveCommitSectorsNIParams, SectorNIActivationInfo};
 
     #[test]
     fn prove_commit_sectors_ni_params() {

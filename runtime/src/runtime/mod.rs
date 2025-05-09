@@ -40,7 +40,7 @@ use fvm_ipld_encoding::ipld_block::IpldBlock;
 use fvm_shared::chainid::ChainID;
 use fvm_shared::event::ActorEvent;
 use fvm_shared::sys::SendFlags;
-pub use vm_api::Primitives;
+pub use recall_vm_api::Primitives;
 
 /// Runtime is the VM's internal runtime object.
 /// this is everything that is accessible to actors, beyond parameters.
